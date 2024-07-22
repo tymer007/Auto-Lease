@@ -8,6 +8,7 @@ module.exports = {
       colors: {
         autoCream: '#FDFDE5',
         autoPurple: '#510489',
+        autoCreamDark:"#3D3D3D"
       },
     },
   },
