@@ -1,9 +1,12 @@
 import React from 'react'
+import Navbar from "../components/Navbar"
+import Footer from "../components/Footer"
 
 function AboutUs() {
   return (
-  
       <div className="font-sans">
+          <Navbar/>
+
         <header className="relative bg-gray-800 text-white">
           <img src="Frame185.png" alt="Car" className="w-full h-64 md:h-96 object-cover" />
           <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50">
@@ -62,7 +65,9 @@ function AboutUs() {
           </div>
         </section>
         </main>
+        <Footer></Footer>
       </div>
+
     );
   }
   
