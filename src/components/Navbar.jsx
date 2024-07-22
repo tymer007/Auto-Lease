@@ -38,7 +38,7 @@ const Navbar = () => {
             Login
           </button>
 
-          <button className="bg-autoCream text-autoPurple px-4 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300">
+          <button className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300">
             Sign Up
           </button>
         </div>
@@ -70,14 +70,14 @@ const Navbar = () => {
               </a>
             </li>
             <li>
-              <button className="border border-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300">
-                Login
-              </button>
+            <button className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300">
+            Login
+          </button>
             </li>
             <li>
-              <button className="bg-white text-purple-800 px-4 py-2 rounded hover:bg-purple-200 transition duration-300">
-                Sign Up
-              </button>
+            <button className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300">
+            Sign Up
+          </button>
             </li>
           </ul>
         </div>
