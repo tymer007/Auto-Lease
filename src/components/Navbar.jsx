@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import logo from "../assets/LogoCream.png"; // Adjust the path as necessary
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,17 +13,19 @@ const Navbar = () => {
     <header className="bg-autoPurple text-white py-4">
       <nav className="flex justify-between items-center w-[90%] mx-auto">
         <div className="flex items-center space-x-6">
-          <img className="w-32 cursor-pointer" src={logo} alt="Logo" />
+          <Link to="/">
+            <img className="w-32 cursor-pointer" src={logo} alt="Logo" />
+          </Link>
         </div>
         <div className="flex-1 flex justify-center">
           <ul className="hidden md:flex space-x-8">
             <li>
-              <a className="hover:text-gray-300" href="#">
+              <a className="hover:text-gray-300" href="/">
                 Home
               </a>
             </li>
             <li>
-              <a className="hover:text-gray-300" href="#">
+              <a className="hover:text-gray-300" href="/aboutus">
                 About Us
               </a>
             </li>
@@ -55,12 +58,12 @@ const Navbar = () => {
         <div className="md:hidden bg-autoPurple text-white py-4">
           <ul className="space-y-4 text-center">
             <li>
-              <a className="hover:text-gray-300" href="#">
+              <a className="hover:text-gray-300" href="/">
                 Home
               </a>
             </li>
             <li>
-              <a className="hover:text-gray-300" href="#">
+              <a className="hover:text-gray-300" href="/aboutus">
                 About Us
               </a>
             </li>
