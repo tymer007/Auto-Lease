@@ -1,30 +1,39 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import Input from "../components/Input";
 import axios from "axios";
-// import LogoHeader from '../components/';
 
 const SignUp = () => {
-  const name = useRef();
-  const email = useRef();
-  const password = useRef();
-  const passwordConfirm = useRef();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    passwordConfirm: '',
+    terms: false
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = new FormData(e.target);
-    console.log(data.entries());
     try {
-        const response = await axios.post('https://auto-lease-backend.onrender.com/api/v1/auth/sign-up',data);
-        console.log(response.data);
-      } catch (error) {
-        console.error('There was an error submitting the form!', error);
-      }
-    };
+      const response = await axios.post('https://auto-lease-backend.onrender.com/api/v1/auth/sign-up', formData);
+      console.log(response.data);
+      // Handle successful signup (e.g., show success message, redirect)
+    } catch (error) {
+      console.error('There was an error submitting the form!', error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
   
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        {/* <LogoHeader /> */}
         <form className="space-y-4" onSubmit={handleSubmit}>
           <Input
             label="Full Name"
@@ -32,7 +41,8 @@ const SignUp = () => {
             id="name"
             placeholder="Full Name"
             name="name"
-            ref={name}
+            value={formData.name}
+            onChange={handleChange}
           />
           <Input
             label="Email"
@@ -40,7 +50,8 @@ const SignUp = () => {
             id="email"
             placeholder="Email"
             name="email"
-            ref={email}
+            value={formData.email}
+            onChange={handleChange}
           />
           <Input
             label="Password"
@@ -48,22 +59,25 @@ const SignUp = () => {
             id="password"
             placeholder="Password"
             name="password"
-            ref={password}
+            value={formData.password}
+            onChange={handleChange}
           />
           <Input
-            label="Confirm Password "
+            label="Confirm Password"
             type="password"
             id="confirmPassword"
             placeholder="Confirm Password"
             name="passwordConfirm"
-            ref={passwordConfirm}
+            value={formData.passwordConfirm}
+            onChange={handleChange}
           />
-
           <div className="flex items-center">
             <input
               type="checkbox"
               id="terms"
               name="terms"
+              checked={formData.terms}
+              onChange={handleChange}
               className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
             />
             <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
@@ -77,7 +91,6 @@ const SignUp = () => {
               </a>
             </label>
           </div>
-
           <button
             type="submit"
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -85,7 +98,6 @@ const SignUp = () => {
             Sign Up
           </button>
         </form>
-
         <p className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{" "}
           <a
