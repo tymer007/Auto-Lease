@@ -7,7 +7,7 @@ module.exports = {
     extend: {
       colors: {
         autoCream: '#FDFDE5',
-        autoPurple: '#510489',
+        autoPurple: '#36454F',
         autoCreamDark:"#3D3D3D"
       },
     },
