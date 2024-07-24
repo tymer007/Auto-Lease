@@ -1,19 +1,13 @@
 import React, { useState } from "react";
-import Input from "../components/Input";
-import CustomAlert from "../components/customAlerts";
 import axios from "axios";
+import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
+import CustomAlert from "../components/customAlerts"; // Import the CustomAlert component
 
-const SignUp = () => {
+const Login = () => {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
-    passwordConfirm: "",
-    terms: false,
-    hasEightChars: false,
-    hasUpperCase: false,
-    hasSpecialChar: false,
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -21,49 +15,20 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: checked,
-      }));
-    } else if (type === "password") {
-      setFormData((prevData) => {
-        const newFormData = {
-          ...prevData,
-          [name]: value,
-        };
-
-        newFormData.hasEightChars = newFormData.password.length >= 8;
-        newFormData.hasUpperCase = /[A-Z]/.test(newFormData.password);
-        newFormData.hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(newFormData.password);
-
-        return newFormData;
-      });
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Perform field validation
-    if (formData.password !== formData.passwordConfirm) {
-      setAlert({ message: "Passwords do not match!", type: "error" });
-    }
-
-    if (!formData.hasEightChars || !formData.hasUpperCase || !formData.hasSpecialChar) {
-        setAlert({ message: "Password does not meet all criteria!", type: "error" });
-      return;
-    }
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://auto-lease-backend.onrender.com/api/v1/auth/sign-up",
+        "https://auto-lease-backend.onrender.com/api/v1/auth/sign-in",
         formData
       );
       console.log(response.data);
@@ -73,20 +38,19 @@ const SignUp = () => {
         localStorage.setItem("token", response.data.token);
       }
 
-      // Navigate to the login page
-      navigate("/");
+      // Navigate to the dashboard or home page
+      navigate("/"); // Change to your desired route
     } catch (error) {
-      console.error("There was an error submitting the form!", error);
-      setAlert({ message: "There was an error submitting the form!", type: "error" });
-      // Handle error (e.g., show error message to user)
+      console.error("There was an error logging in!", error);
+      setAlert({ message: "There was an error logging in!", type: "error" });
     } finally {
-        setIsLoading(false); // Set loading to false after submission is complete
-      }
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="bg-autolease-pattern min-h-screen bg-gray-100 flex justify-center items-center relative">
-          {alert.message && (
+      {alert.message && (
         <CustomAlert
           message={alert.message}
           type={alert.type}
@@ -130,118 +94,48 @@ const SignUp = () => {
               fill="#36454F"
               fillOpacity="0.5"
             />
-          </svg>
+          </svg> 
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <Input
-            label="Full Name"
-            type="text"
-            id="name"
-            placeholder="Full Name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-          <Input
-            label="Email"
-            type="email"
-            id="email"
-            placeholder="Email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <Input
-            label="Password"
-            type="password"
-            id="password"
-            placeholder="Password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="hasEightChars"
-                name="hasEightChars"
-                checked={formData.hasEightChars}
-                readOnly
-                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-              />
-              <label htmlFor="hasEightChars" className="ml-2 block text-sm text-gray-700">
-                8 Characters
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="hasUpperCase"
-                name="hasUpperCase"
-                checked={formData.hasUpperCase}
-                readOnly
-                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-              />
-              <label htmlFor="hasUpperCase" className="ml-2 block text-sm text-gray-700">
-                1 upper case character
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="hasSpecialChar"
-                name="hasSpecialChar"
-                checked={formData.hasSpecialChar}
-                readOnly
-                className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
-              />
-              <label htmlFor="hasSpecialChar" className="ml-2 block text-sm text-gray-700">
-                1 special character
-              </label>
-            </div>
-          </div>
-          <Input
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm Password"
-            name="passwordConfirm"
-            value={formData.passwordConfirm}
-            onChange={handleChange}
-          />
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="terms"
-              name="terms"
-              checked={formData.terms}
-              onChange={handleChange}
-              className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            />
-            <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-              I have read and understood and agree to the{" "}
-              <a href="#" className="text-indigo-600 hover:text-indigo-500">
-                Terms & Condition
-              </a>{" "}
-              and{" "}
-              <a href="#" className="text-indigo-600 hover:text-indigo-500">
-                Privacy Policy
-              </a>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email
             </label>
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Email"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <Input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Password"
+            />
           </div>
           <button
             type="submit"
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
-            
-            {isLoading ? "Loading...":"Sign Up" }
+            {isLoading ? "Loading..." : "Log In"}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account?{" "}
-          <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Login
+          Don't have an account?{" "}
+          <a href="/sign-up" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Sign Up
           </a>
         </p>
       </div>
@@ -249,4 +143,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Login;

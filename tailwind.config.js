@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'autolease-pattern': "url('./assets/Autolease Desktop.png')",
+      },
       colors: {
         autoCream: '#FDFDE5',
         autoPurple: '#36454F',

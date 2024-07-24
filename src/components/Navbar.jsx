@@ -1,13 +1,19 @@
 import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/LogoCream.png"; // Adjust the path as necessary
-import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   const onToggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const linkStyle = (path) =>
+    location.pathname === path
+      ? "relative hover:text-gray-300 after:absolute after:left-0 after:right-0 after:bottom-[-4px] after:h-[2px] after:bg-white after:content-[''] after:rounded"
+      : "hover:text-gray-300";
 
   return (
     <header className="bg-autoPurple text-white py-4">
@@ -20,33 +26,35 @@ const Navbar = () => {
         <div className="flex-1 flex justify-center">
           <ul className="hidden md:flex space-x-8">
             <li>
-              <a className="hover:text-gray-300" href="/">
+              <Link className={linkStyle("/")} to="/">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="hover:text-gray-300" href="/aboutus">
+              <Link className={linkStyle("/aboutus")} to="/aboutus">
                 About Us
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="hover:text-gray-300" href="#">
+              <Link className={linkStyle("/contactus")} to="/contactus">
                 Contact Us
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
         <div className="hidden md:flex items-center gap-6">
-          <button className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300">
-            Login
-          </button>
-
           <Link 
-  to="/signup" 
-  className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300">
-
-  Sign Up
-</Link>
+            to="/login" 
+            className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300"
+          >
+            Log In
+          </Link>
+          <Link 
+            to="/signup" 
+            className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300"
+          >
+            Sign Up
+          </Link>
         </div>
         <div className="md:hidden flex items-center">
           <button
@@ -61,29 +69,35 @@ const Navbar = () => {
         <div className="md:hidden bg-autoPurple text-white py-4">
           <ul className="space-y-4 text-center">
             <li>
-              <a className="hover:text-gray-300" href="/">
+              <Link className={linkStyle("/")} to="/">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="hover:text-gray-300" href="/aboutus">
+              <Link className={linkStyle("/aboutus")} to="/aboutus">
                 About Us
-              </a>
+              </Link>
             </li>
             <li>
-              <a className="hover:text-gray-300" href="#">
+              <Link className={linkStyle("/contactus")} to="/contactus">
                 Contact Us
-              </a>
+              </Link>
             </li>
             <li>
-            <button className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300">
-            Login
-          </button>
+              <Link 
+                to="/login" 
+                className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300"
+              >
+                Log In
+              </Link>
             </li>
             <li>
-            <button className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300">
-            Sign Up
-          </button>
+              <Link 
+                to="/signup" 
+                className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300"
+              >
+                Sign Up
+              </Link>
             </li>
           </ul>
         </div>

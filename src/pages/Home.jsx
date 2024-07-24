@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 
 function Home() {
     const [cars, setCars] = useState([]);
     const [visibleCars, setVisibleCars] = useState(9);
-    const [selectedCar, setSelectedCar] = useState(null);
     const [searchActive, setSearchActive] = useState(false);
+    const navigate = useNavigate(); // Initialize useNavigate
 
     useEffect(() => {
         const fetchCars = async () => {
@@ -27,7 +28,7 @@ function Home() {
     };
 
     const handleCarClick = (car) => {
-        setSelectedCar(car);
+        navigate(`/car/${car._id}`, { state: { car } });
     };
 
     const handleSearchClick = () => {
@@ -55,13 +56,13 @@ function Home() {
                         <button className="border-autoPurple border-2 font-medium text-autoPurple p-2 rounded-lg">Sign Up</button>
                     </div>
                 </div>
-                
+
                 {!searchActive && (
                     <div className="text-center my-8">
                         <img src="wingcars.png" alt="Cars" className="mx-auto" />
                     </div>
                 )}
-                
+
                 {!searchActive && (
                     <div className="text-center my-24">
                         <h2 className="text-4xl font-bold">Discover Our Key Features and Benefits</h2>
@@ -70,15 +71,15 @@ function Home() {
                         <div className="flex justify-around my-4">
                             <div>
                                 <h3 className="font-bold">Wide Range of Vehicles</h3>
-                                <p>Choose from our wide selection of vehicles, ranging from compact cars to spacious SUVs.</p>
+                                <p className="mt-2">Choose from our wide selection of vehicles, ranging from compact cars to spacious SUVs.</p>
                             </div>
                             <div>
                                 <h3 className="font-bold">Flexible Rental Options</h3>
-                                <p>Rent by the hour, day, week, or month - whatever suits your needs best.</p>
+                                <p className="mt-2">Rent by the hour, day, week, or month - whatever suits your needs best.</p>
                             </div>
                             <div>
                                 <h3 className="font-bold">Comprehensive Insurance Coverage</h3>
-                                <p>Drive with peace of mind, knowing that you have comprehensive coverage.</p>
+                                <p className="mt-2">Drive with peace of mind, knowing that you have comprehensive coverage.</p>
                             </div>
                         </div>
                         <div className='flex gap-4 justify-center'>
@@ -87,7 +88,7 @@ function Home() {
                         </div>
                     </div>
                 )}
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     {cars.slice(0, visibleCars).map((car) => (
                         <div key={car._id} className="bg-white p-4 rounded shadow-md">
@@ -107,30 +108,10 @@ function Home() {
                         </div>
                     ))}
                 </div>
-                
+
                 {cars.length > visibleCars && (
                     <div className="text-center my-4">
                         <button onClick={handleSeeMore} className="bg-autoPurple text-white p-2 rounded">See More</button>
-                    </div>
-                )}
-                
-                {selectedCar && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                        <div className="bg-white p-4 rounded max-w-md">
-                            <h2 className="text-2xl font-bold">{selectedCar.name}</h2>
-                            <p>Model: {selectedCar.model}</p>
-                            <p>Category: {selectedCar.category}</p>
-                            <p>Price: ₦{selectedCar.price}</p>
-                            <p>Fee: ₦{selectedCar.fee}</p>
-                            <p>Discount: {selectedCar.discount}%</p>
-                            <p>{selectedCar.summary}</p>
-                            <button
-                                onClick={() => setSelectedCar(null)}
-                                className="bg-red-500 text-white p-2 rounded mt-4"
-                            >
-                                Close
-                            </button>
-                        </div>
                     </div>
                 )}
 
