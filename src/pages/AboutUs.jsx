@@ -26,17 +26,17 @@ function AboutUs() {
           <h2 className="text-3xl font-semibold mb-8">Choose the Perfect Vehicle for Your Needs</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="max-w-xs mx-auto">
-              <img src="RentalDates.svg" alt="Select Your Rental Dates" className="w-288 h-201.45 object-cover mb-4" />
+              <img src="cardate.svg" alt="Select Your Rental Dates" className="w-288 h-201.45 object-cover mb-4" />
               <h3 className="text-xl font-semibold">Select Your Rental Dates</h3>
               <p className="mt-2 text-gray-700">Take your time browsing our wide selection of vehicles...</p>
             </div>
             <div className="max-w-xs mx-auto">
-              <img src="Booking.svg" alt="Complete Your Booking Online" className="w-288 h-167.61 object-cover mb-4" />
+              <img src="carpool.svg" alt="Complete Your Booking Online" className="w-288 h-167.61 object-cover mb-4" />
               <h3 className="text-xl font-semibold">Complete Your Booking Online</h3>
               <p className="mt-2 text-gray-700">After selecting your rental dates, proceed to our secure...</p>
             </div>
             <div className="max-w-xs mx-auto">
-              <img src="Experience.svg" alt="Enjoy Your Worry-Free Driving Experience" className="w-288 h-173.64 object-cover mb-4" />
+              <img src="selfdrive.svg" alt="Enjoy Your Worry-Free Driving Experience" className="w-288 h-173.64 object-cover mb-4" />
               <h3 className="text-xl font-semibold">Enjoy Your Worry-Free Driving Experience</h3>
               <p className="mt-2 text-gray-700">Get ready to pick up your selected vehicle on the specified...</p>
             </div>
