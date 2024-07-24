@@ -1,36 +1,56 @@
 import React, { useState } from "react";
 import Input from "../components/Input";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    passwordConfirm: '',
-    terms: false
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirm: "",
+    terms: false,
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Perform field validation
+    if (formData.password !== formData.passwordConfirm) {
+      alert("Passwords do not match!");
+      return;
+    }
+
     try {
-      const response = await axios.post('https://auto-lease-backend.onrender.com/api/v1/auth/sign-up', formData);
+      const response = await axios.post(
+        "https://auto-lease-backend.onrender.com/api/v1/auth/sign-up",
+        formData
+      );
       console.log(response.data);
-      // Handle successful signup (e.g., show success message, redirect)
+
+      // Save token to local storage
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
+
+      // Navigate to the login page
+      navigate("/");
     } catch (error) {
-      console.error('There was an error submitting the form!', error);
+      console.error("There was an error submitting the form!", error);
       // Handle error (e.g., show error message to user)
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">

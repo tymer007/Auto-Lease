@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 
@@ -16,9 +12,9 @@ function Home() {
     useEffect(() => {
         const fetchCars = async () => {
             try {
-                const response = await axios.get('https://auto-lease.onrender.com/api/v1/cars/');
+                const response = await axios.get('https://auto-lease-backend.onrender.com/api/v1/cars/');
                 console.log(response.data);
-                setCars(response.data.data);
+                setCars(response.data.data.cars);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -39,7 +35,6 @@ function Home() {
     };
 
     return (
-
         <div>
             <Navbar />
             <div className="p-4">
@@ -60,11 +55,13 @@ function Home() {
                         <button className="border-autoPurple border-2 font-medium text-autoPurple p-2 rounded-lg">Sign Up</button>
                     </div>
                 </div>
+                
                 {!searchActive && (
                     <div className="text-center my-8">
                         <img src="wingcars.png" alt="Cars" className="mx-auto" />
                     </div>
                 )}
+                
                 {!searchActive && (
                     <div className="text-center my-24">
                         <h2 className="text-4xl font-bold">Discover Our Key Features and Benefits</h2>
@@ -90,57 +87,67 @@ function Home() {
                         </div>
                     </div>
                 )}
-                {searchActive && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                        {cars.slice(0, visibleCars).map((car) => (
-                            <div key={car._id} className="bg-white p-4 rounded shadow-md">
-                                <img src={car.coverImage.url} alt={car.name} className="w-full h-48 object-cover rounded" />
-                                <h3 className="text-xl font-bold">{car.name}</h3>
-                                <p className="text-gray-700">{car.category}</p>
-                                <p className="text-purple-500 font-bold">₦{car.price}</p>
-                                <button
-                                    onClick={() => handleCarClick(car)}
-                                    className="bg-purple-500 text-white p-2 rounded w-full mt-2"
-                                >
-                                    Rent
-                                </button>
-                            </div>
-                        ))}
-                        {selectedCar && (
-                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                                <div className="bg-white p-4 rounded">
-                                    <h2 className="text-2xl font-bold">{selectedCar.name}</h2>
-                                    <p>{selectedCar.summary}</p>
-                                    <button
-                                        onClick={() => setSelectedCar(null)}
-                                        className="bg-red-500 text-white p-2 rounded mt-4"
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                )}
-                {cars.length > visibleCars && searchActive && (
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    {cars.slice(0, visibleCars).map((car) => (
+                        <div key={car._id} className="bg-white p-4 rounded shadow-md">
+                            <img src={car.coverImage.url} alt={car.name} className="w-full h-48 object-cover rounded" />
+                            <h3 className="text-xl font-bold">{car.name}</h3>
+                            <p className="text-gray-700">Model: {car.model}</p>
+                            <p className="text-gray-700">Category: {car.category}</p>
+                            <p className="text-autoPurple font-bold">₦{car.price}</p>
+                            <p className="text-sm text-gray-600">Rating: {car.ratingsAverage} ({car.ratingsQuantity} reviews)</p>
+                            <p className="text-sm text-gray-600">{car.summary}</p>
+                            <button
+                                onClick={() => handleCarClick(car)}
+                                className="bg-autoPurple text-white p-2 rounded w-full mt-2"
+                            >
+                                Rent
+                            </button>
+                        </div>
+                    ))}
+                </div>
+                
+                {cars.length > visibleCars && (
                     <div className="text-center my-4">
-                        <button onClick={handleSeeMore} className="bg-purple-500 text-white p-2 rounded">See More</button>
+                        <button onClick={handleSeeMore} className="bg-autoPurple text-white p-2 rounded">See More</button>
                     </div>
                 )}
+                
+                {selectedCar && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-4 rounded max-w-md">
+                            <h2 className="text-2xl font-bold">{selectedCar.name}</h2>
+                            <p>Model: {selectedCar.model}</p>
+                            <p>Category: {selectedCar.category}</p>
+                            <p>Price: ₦{selectedCar.price}</p>
+                            <p>Fee: ₦{selectedCar.fee}</p>
+                            <p>Discount: {selectedCar.discount}%</p>
+                            <p>{selectedCar.summary}</p>
+                            <button
+                                onClick={() => setSelectedCar(null)}
+                                className="bg-red-500 text-white p-2 rounded mt-4"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <section className="text-start mt-12">
-                    <div className="relative bg-purple-600 text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
+                    <div className="relative bg-autoPurple text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
                         <img src="Frame180.png" alt="Background" className="absolute inset-0 w-full h-full object-cover" />
                         <div className="relative z-10">
                             <h2 className="text-2xl font-semibold mb-4">Become A Dealer</h2>
                             <p className="mb-4">Register your dealership and put up your vehicle for rental</p>
-                            <button className="bg-white text-purple-600 font-semibold py-2 px-4 rounded-lg">Register</button>
+                            <button className="bg-white text-autoPurple font-semibold py-2 px-4 rounded-lg">Register</button>
                         </div>
                     </div>
                 </section>
             </div>
             <Footer />
         </div>
-    )
+    );
 }
 
-export default Home
+export default Home;
