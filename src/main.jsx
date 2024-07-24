@@ -8,6 +8,7 @@ import Home from './pages/Home.jsx'
 import ContactUs from './pages/ContactUs.jsx'
 import AboutUs from './pages/AboutUs.jsx'
 import PageNotFound from './pages/PageNotFound.jsx'
+import SignUp from './pages/SignUp.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -16,7 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/Home' element={<Home />} />
       <Route path='/AboutUs' element={< AboutUs />} />
       <Route path='/ContactUs' element={< ContactUs />} />
-   
+      <Route path='/signup' element={< SignUp />} />
 
 
       <Route path='*' element={< PageNotFound />} />

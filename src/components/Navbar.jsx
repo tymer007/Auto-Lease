@@ -41,9 +41,12 @@ const Navbar = () => {
             Login
           </button>
 
-          <button className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300">
-            Sign Up
-          </button>
+          <Link 
+  to="/signup" 
+  className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300">
+
+  Sign Up
+</Link>
         </div>
         <div className="md:hidden flex items-center">
           <button
