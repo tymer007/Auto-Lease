@@ -13,7 +13,7 @@ const VerificationPage = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://auto-lease-backend.onrender.com/api/v1/auth/verify/${token}',
+        'https://auto-lease-backend.onrender.com/api/v1/auth/verify/{token}',
         {},
         {
           headers: {
