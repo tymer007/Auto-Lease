@@ -63,14 +63,15 @@ function AboutUs() {
         </section>
 
         <section className="text-start mt-12">
-          <div className="relative bg-autolease-component text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
-            <div className="relative z-10">
-              <h2 className="text-2xl font-semibold mb-4">Become A Dealer</h2>
-              <p className="mb-4">Register your dealership and put up your vehicle for rental</p>
-              <Link to="/dealership" className="bg-white text-autoPurple font-semibold py-2 px-4 rounded-lg">Register</Link>
-            </div>
-          </div>
-        </section>
+                    <div className="relative bg-autoPurple text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
+                        <img src="src/assets/Frame430.png" alt="Background" className="absolute inset-0 w-full h-full object-cover" />
+                        <div className="relative z-10">
+                            <h2 className="text-2xl font-semibold mb-4">Become A Dealer</h2>
+                            <p className="mb-4">Register your dealership and put up your vehicle for rental</p>
+                            <button className="bg-white text-autoPurple font-semibold py-2 px-4 rounded-lg">Register</button>
+                        </div>
+                    </div>
+                </section>
       </main>
       <Footer />
     </div>

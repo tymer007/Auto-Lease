@@ -7,16 +7,19 @@ const AdminPage = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [isLoadingAction, setIsLoadingAction] = useState(false);
 
   useEffect(() => {
     const fetchApplications = async () => {
       try {
         const response = await axios.get('https://auto-lease-backend.onrender.com/api/v1/dealerships', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Add your auth token here if required
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        setApplications(response.data);
+        console.log(response.data); // Log the response data to see its structure
+        setApplications(response.data.data.dealerships || []); // Access the correct path
       } catch (err) {
         setError('Error fetching applications');
       } finally {
@@ -27,37 +30,51 @@ const AdminPage = () => {
     fetchApplications();
   }, []);
 
-  const handleAccept = async (id) => {
+  const handleAccept = async (dealership) => {
+    setIsLoadingAction(true);
+    setSuccessMessage(null);
     try {
-      await axios.post(
-        `https://auto-lease-backend.onrender.com/api/v1/dealerships/${id}/accept`,
+      const ownerId = typeof dealership.owner === 'object' ? dealership.owner._id : dealership.owner;
+
+      await axios.patch(
+        `https://auto-lease-backend.onrender.com/api/v1/dealerships/users/approve/${ownerId}`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Add your auth token here if required
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
-      setApplications(applications.filter(app => app._id !== id));
+      setApplications(applications.filter(app => app._id !== dealership._id));
+      setSuccessMessage('Dealership approved successfully!');
     } catch (err) {
       setError('Error accepting application');
+    } finally {
+      setIsLoadingAction(false);
     }
   };
 
-  const handleReject = async (id) => {
+  const handleReject = async (dealership) => {
+    setIsLoadingAction(true);
+    setSuccessMessage(null);
     try {
-      await axios.post(
-        `https://auto-lease-backend.onrender.com/api/v1/dealerships/${id}/reject`,
+      const ownerId = typeof dealership.owner === 'object' ? dealership.owner._id : dealership.owner;
+
+      await axios.patch(
+        `https://auto-lease-backend.onrender.com/api/v1/dealerships/users/reject/${ownerId}`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Add your auth token here if required
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
-      setApplications(applications.filter(app => app._id !== id));
+      setApplications(applications.filter(app => app._id !== dealership._id));
+      setSuccessMessage('Dealership rejected successfully!');
     } catch (err) {
       setError('Error rejecting application');
+    } finally {
+      setIsLoadingAction(false);
     }
   };
 
@@ -88,28 +105,54 @@ const AdminPage = () => {
           ) : applications.length === 0 ? (
             <p>No applications to review.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {applications.map(application => (
-                <div key={application._id} className="p-4 border border-gray-300 rounded-lg shadow-md">
-                  <h3 className="text-xl font-semibold">{application.name}</h3>
-                  <p className="mt-2 text-gray-700">{application.details}</p>
-                  <div className="mt-4 flex justify-between">
-                    <button
-                      onClick={() => handleAccept(application._id)}
-                      className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
-                    >
-                      Accept
-                    </button>
-                    <button
-                      onClick={() => handleReject(application._id)}
-                      className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
-                    >
-                      Reject
-                    </button>
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 mx-8">
+            {applications.map(application => (
+              <div key={application._id} className="bg-autoCreamDark p-4 rounded-lg shadow-md">
+                <div className="mb-2">
+                  <span className="text-sm text-autoCream border border-gray-700 rounded-full px-2 py-1">
+                    {application.license}
+                  </span>
                 </div>
-              ))}
+                <h3 className="text-xl text-autoCream font-bold mb-2">
+                  {application.name}
+                </h3>
+                <p className="text-sm text-autoCream mb-4">
+                  {application.summary}
+                </p>
+                <img 
+                  src={application.coverImage?.url || 'default-cover-image.jpg'} 
+                  alt={application.name} 
+                  className="w-full h-40 object-cover rounded-lg mb-4"
+                />
+                <div className="flex justify-between items-center mb-2">
+                 
+                </div>
+                
+                <div className='flex justify-between'>
+                  <button
+                    onClick={() => handleAccept(application)}
+                    className="bg-autoCream text-autoPurple px-4 py-2 rounded-full w-[48%]"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => handleReject(application)}
+                    className="border border-autoCream text-autoCream px-4 py-2 rounded-full w-[48%]"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          )}
+          {isLoadingAction && (
+            <div className="flex justify-center items-center mt-4">
+              <div className="w-8 h-8 border-4 border-t-4 border-autoPurple border-solid rounded-full animate-spin"></div>
             </div>
+          )}
+          {successMessage && (
+            <p className="text-green-500 mt-4">{successMessage}</p>
           )}
         </section>
       </main>

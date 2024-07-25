@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode"; // Import jwt-decode to decode the token
-import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
+import Input from "../components/Input";
 import CustomAlert from "../components/customAlerts"; // Import the CustomAlert component
 
 const Login = () => {
@@ -38,9 +37,8 @@ const Login = () => {
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
 
-        // Decode the token to get user role
-        const decodedToken = jwtDecode(response.data.token);
-        const userRole = decodedToken.role; // Adjust this based on your token's structure
+        // Get user role from response data
+        const userRole = response.data.data.user.role; // Adjust this based on your response structure
 
         // Navigate based on user role
         if (userRole === "admin") {
@@ -72,7 +70,7 @@ const Login = () => {
       <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
       <div className="absolute inset-0 bg-blue-900 opacity-50 z-0"></div>
       <div className="bg-white p-8 rounded-lg shadow-md w-96 relative z-10">
-        <div className="flex justify-center items-center h-44">
+      <div className="flex justify-center items-center h-44">
         <svg
             width="908"
             height="474"
