@@ -33,7 +33,7 @@ const PageNotFound = () => {
       padding: '10px 20px',
       fontSize: '16px',
       backgroundColor: 'autoPurple',
-      color: 'autoCream',
+      color: 'autoPurple',
       border: 'none',
       borderRadius: '5px',
       cursor: 'pointer',

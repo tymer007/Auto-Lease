@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 
@@ -8,7 +8,7 @@ function Home() {
     const [cars, setCars] = useState([]);
     const [visibleCars, setVisibleCars] = useState(9);
     const [searchActive, setSearchActive] = useState(false);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCars = async () => {
@@ -33,6 +33,10 @@ function Home() {
 
     const handleSearchClick = () => {
         setSearchActive(true);
+    };
+
+    const handleDealershipApplicationClick = () => {
+        navigate('/dealership');
     };
 
     return (
@@ -125,6 +129,16 @@ function Home() {
                         </div>
                     </div>
                 </section>
+
+                {/* Dealership Application Button */}
+                <div className="text-center my-8">
+                    <button
+                        onClick={handleDealershipApplicationClick}
+                        className="bg-autoPurple text-white p-3 rounded-lg text-lg hover:bg-transparent hover:text-autoPurple hover:border hover:border-autoPurple transition duration-300 "
+                    >
+                        Apply to Become a Dealer
+                    </button>
+                </div>
             </div>
             <Footer />
         </div>

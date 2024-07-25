@@ -11,6 +11,8 @@ import PageNotFound from './pages/PageNotFound.jsx'
 import SignUp from './pages/SignUp.jsx'
 import Login from './pages/Login.jsx'
 import CarDetails from './components/CarDetails.jsx'
+import CheckoutPage from './pages/CheckoutPage.jsx'
+import DealershipApplicationPage from './pages/DealershipApplication.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -22,6 +24,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/signup' element={< SignUp />} />
       <Route path='/login' element={< Login />} />
       <Route path="/car/:id" element={<CarDetails />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
+      <Route path="/dealership" element={<DealershipApplicationPage />} />
       
 
 
