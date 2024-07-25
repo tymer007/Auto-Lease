@@ -27,7 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path="/car/:id" element={<CarDetails />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/dealership" element={<DealershipApplicationPage />} />
-      <Route path="/verify" element={<VerificationPage />} />
+      <Route path="/verify/:token" element={<VerificationPage />} />
       
 
 
