@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-import VerificationPrompt from '../components/VerificationPrompt';
 
 function Home() {
     const [cars, setCars] = useState([]);
     const [visibleCars, setVisibleCars] = useState(9);
     const [searchActive, setSearchActive] = useState(false);
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Initialize useNavigate
 
     useEffect(() => {
         const fetchCars = async () => {
@@ -36,15 +35,10 @@ function Home() {
         setSearchActive(true);
     };
 
-    const handleDealershipApplicationClick = () => {
-        navigate('/dealership');
-    };
-
     return (
         <div>
             <Navbar />
-            <VerificationPrompt/>
-            <div className="p-4 ">
+            <div className="p-4">
                 <div className="text-center my-20">
                     <h1 className="text-4xl font-bold text-autoPurple">Seamless Car Rental Experience In Jos</h1>
                     <p className='text-autoPurple'>Discover a wide range of vehicles and flexible rental options.</p>
@@ -95,38 +89,38 @@ function Home() {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mx-8">
                     {cars.slice(0, visibleCars).map((car) => (
-                        <div key={car._id} className="bg-white p-4 rounded shadow-md">
-                            <img src={car.coverImage.url} alt={car.name} className="w-full h-48 object-cover rounded" />
-                            <h3 className="text-xl font-bold">{car.name}</h3>
-                            <p className="text-gray-700">Model: {car.model}</p>
-                            <p className="text-gray-700">Category: {car.category}</p>
-                            <p className="text-autoPurple font-bold">₦{car.price}</p>
-                            <p className="text-sm text-gray-600">Rating: {car.ratingsAverage} ({car.ratingsQuantity} reviews)</p>
-                            <p className="text-sm text-gray-600">{car.summary}</p>
-                            <button
-                                onClick={() => handleCarClick(car)}
-                                className="bg-autoPurple text-white p-2 rounded w-full mt-2"
-                            >
-                                Rent
-                            </button>
+                        <div key={car._id} className="bg-white p-4 rounded-3xl shadow-md max-w-96">
+                            <p className="text-gray-700 text-start border-gray-700 rounded-xl border-2 max-w-fit p-2">{car.category}</p>
+                            <h3 className="text-2xl font-bold text-center text-gray-600">{car.name}</h3>
+                            <img src={car.coverImage.url} alt={car.name} className="w-full object-cover rounded-xl py-2" />
+                            <div className='flex justify-between pt-2'>
+                                <p className="text-autoPurple font-medium place-self-center">₦{car.price}</p>
+                                <button
+                                    onClick={() => handleCarClick(car)}
+                                    className="bg-autoPurple text-white p-2 rounded-3xl place-self-center px-4 "
+                                >
+                                    Rent
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
 
                 {cars.length > visibleCars && (
-                    <div className="text-center my-4">
-                        <button onClick={handleSeeMore} className="bg-autoPurple text-white p-2 rounded">See More</button>
+                    <div className="text-end my-4 mx-8">
+                        <button onClick={handleSeeMore} className="bg-autoPurple text-white rounded-xl p-3 px-8">See More</button>
                     </div>
                 )}
 
                 <section className="text-start mt-12">
-                    <div className="relative bg-autolease-component text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
+                    <div className="relative bg-autoPurple text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
+                        <img src="Frame180.png" alt="Background" className="absolute inset-0 w-full h-full object-cover" />
                         <div className="relative z-10">
                             <h2 className="text-2xl font-semibold mb-4">Become A Dealer</h2>
                             <p className="mb-4">Register your dealership and put up your vehicle for rental</p>
-                            <button onClick={handleDealershipApplicationClick} className="bg-white text-autoPurple font-semibold py-2 px-4 rounded-lg">Register</button>
+                            <button className="bg-white text-autoPurple font-semibold py-2 px-4 rounded-lg">Register</button>
                         </div>
                     </div>
                 </section>

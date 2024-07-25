@@ -30,6 +30,15 @@ function CarDetails() {
             <p>Fee: ₦{car.fee}</p>
             <p>Discount: {car.discount}%</p>
             <p>{car.summary}</p>
+
+            <img src={car.coverImage.url} alt={car.name} className="w-full h-48 object-cover rounded" />
+            <h3 className="text-xl font-bold">{car.name}</h3>
+            <p className="text-gray-700">Model: {car.model}</p>
+            <p className="text-gray-700">Category: {car.category}</p>
+            <p className="text-autoPurple font-bold">₦{car.price}</p>
+            <p className="text-sm text-gray-600">Rating: {car.ratingsAverage} ({car.ratingsQuantity} reviews)</p>
+            <p className="text-sm text-gray-600">{car.summary}</p>
+
             {/* Add any additional details or actions here */}
         </div>
     );
