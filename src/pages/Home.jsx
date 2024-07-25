@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
+import VerificationPrompt from '../components/VerificationPrompt';
 
 function Home() {
     const [cars, setCars] = useState([]);
@@ -42,7 +43,8 @@ function Home() {
     return (
         <div>
             <Navbar />
-            <div className="p-4">
+            <VerificationPrompt/>
+            <div className="p-4 ">
                 <div className="text-center my-20">
                     <h1 className="text-4xl font-bold text-autoPurple">Seamless Car Rental Experience In Jos</h1>
                     <p className='text-autoPurple'>Discover a wide range of vehicles and flexible rental options.</p>
@@ -120,25 +122,14 @@ function Home() {
                 )}
 
                 <section className="text-start mt-12">
-                    <div className="relative bg-autoPurple text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
-                        <img src="Frame180.png" alt="Background" className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="relative bg-autolease-component text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
                         <div className="relative z-10">
                             <h2 className="text-2xl font-semibold mb-4">Become A Dealer</h2>
                             <p className="mb-4">Register your dealership and put up your vehicle for rental</p>
-                            <button className="bg-white text-autoPurple font-semibold py-2 px-4 rounded-lg">Register</button>
+                            <button onClick={handleDealershipApplicationClick} className="bg-white text-autoPurple font-semibold py-2 px-4 rounded-lg">Register</button>
                         </div>
                     </div>
                 </section>
-
-                {/* Dealership Application Button */}
-                <div className="text-center my-8">
-                    <button
-                        onClick={handleDealershipApplicationClick}
-                        className="bg-autoPurple text-white p-3 rounded-lg text-lg hover:bg-transparent hover:text-autoPurple hover:border hover:border-autoPurple transition duration-300 "
-                    >
-                        Apply to Become a Dealer
-                    </button>
-                </div>
             </div>
             <Footer />
         </div>

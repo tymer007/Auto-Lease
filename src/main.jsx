@@ -13,6 +13,7 @@ import Login from './pages/Login.jsx'
 import CarDetails from './components/CarDetails.jsx'
 import CheckoutPage from './pages/CheckoutPage.jsx'
 import DealershipApplicationPage from './pages/DealershipApplication.jsx'
+import VerificationPage from './pages/VerifyUser.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path="/car/:id" element={<CarDetails />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/dealership" element={<DealershipApplicationPage />} />
+      <Route path="/verify" element={<VerificationPage />} />
       
 
 

@@ -6,6 +6,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
+        'autolease-component': "url('./assets/Frame430.png')",
         'autolease-pattern': "url('./assets/Autolease Desktop.png')",
       },
       colors: {

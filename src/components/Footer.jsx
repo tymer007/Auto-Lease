@@ -1,63 +1,38 @@
 import React from "react";
-import logo from "../assets/LogoCream.png"
+import logo from '../assets/AutoLease.png'
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <div className="w-full bg-autoPurple text-white">
-      <div className="xl:px-40 pb-12 lg:px-20 md:px-10 sm:px-5 px-10">
-        <div className="w-full pt-12 flex flex-col sm:flex-row space-y-2 justify-start">
-          <div className="w-full sm:w-2/5 pr-6 flex flex-col space-y-4">
-            <Link to="/">
-              <img className="w-43" src={logo} alt="Logo" />
+    <footer className="w-full bg-white text-gray-800 py-8">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex flex-col items-center justify-center space-y-6">
+          <Link to="/" className="text-4xl font-bold text-gray-800">
+            <img src={logo} alt="Home" />
+          </Link>
+          
+          <div className="flex items-center space-x-2">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="py-2 px-4 w-64 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
+            />
+            <Link to="/contactus" className="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300">
+              Contact Us
             </Link>
           </div>
-          <div className="w-full m-20 sm:w-1/5 flex flex-col space-y-4">
-            <a className="opacity-60" href="/aboutus">
-              About Us
-            </a>
-            <a className="opacity-60" href="#">
-              Responsibilities
-            </a>
-            <a className="opacity-60" href="#">
-              Our Services
-            </a>
-            <a className="opacity-60" href="#">
-              Contact
-            </a>
+
+          <div className="flex items-center space-x-4">
+            <button className="bg-gray-800 text-white py-1 px-3 rounded-md text-sm">
+              English
+            </button>
+            <span className="text-sm text-gray-600">
+              © 2024 Olamide Afolabi
+            </span>
           </div>
-          <div className="w-full sm:w-1/5 flex flex-col space-y-4">
-            <a className="opacity-60" href="#">
-              Disclaimer
-            </a>
-            <a className="opacity-60" href="#">
-              Testimonials
-            </a>
-            <a className="opacity-60" href="#">
-              Privacy Policy
-            </a>
-            <a className="opacity-60" href="#">
-              Terms of Service
-            </a>
-          </div>
-          <div className="w-full sm:w-1/5 pt-6 flex items-end mb-1">
-            <div className="flex flex-row space-x-4">
-              <a href="#" className="text-white">
-              </a>
-              <a href="#" className="text-white">
-              </a>
-              <a href="#" className="text-white">
-              </a>
-              <a href="#" className="text-white">
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="opacity-60 pt-2">
-          <p>© 2020 Executive Trade International.</p>
         </div>
       </div>
-    </div>
+    </footer>
   );
 };
 
