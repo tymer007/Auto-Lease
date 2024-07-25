@@ -13,7 +13,7 @@ const VerificationPage = () => {
     setIsLoading(true);
     try {
       const accessToken = localStorage.getItem('token');
-      const response = await axios.post(
+      const response = await axios.patch(
         `https://auto-lease-backend.onrender.com/api/v1/auth/verify/${token}`,
         {},
         {
