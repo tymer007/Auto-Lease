@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CustomAlert from '../components/customAlerts'; // Ensure the correct path
 
 const VerificationPage = () => {
+  const { token } = useParams(); // Extract the token from the URL parameters
   const [isLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState({ message: '', type: '' });
   const navigate = useNavigate();
@@ -11,13 +12,13 @@ const VerificationPage = () => {
   const handleVerification = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const accessToken = localStorage.getItem('token');
       const response = await axios.post(
-        'https://auto-lease-backend.onrender.com/api/v1/auth/verify/{token}',
+        `https://auto-lease-backend.onrender.com/api/v1/auth/verify/${token}`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       );
