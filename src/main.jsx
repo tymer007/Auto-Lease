@@ -14,6 +14,8 @@ import CarDetails from './components/CarDetails.jsx'
 import CheckoutPage from './pages/CheckoutPage.jsx'
 import DealershipApplicationPage from './pages/DealershipApplication.jsx'
 import VerificationPage from './pages/VerifyUser.jsx'
+import AdminPage from './pages/AdminPage.jsx'
+// import DealershipDashboard from './pages/DealershipDashboard.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -28,6 +30,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/dealership" element={<DealershipApplicationPage />} />
       <Route path="/verify/:token" element={<VerificationPage />} />
+      <Route path="/admin-dashboard" element={<AdminPage />} />
+      {/* <Route path="/dealership-dashboard" element={<DealershipDashboard />} /> */}
       
 
 

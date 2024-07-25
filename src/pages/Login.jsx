@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {jwtDecode} from "jwt-decode"; // Import jwt-decode to decode the token
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 import CustomAlert from "../components/customAlerts"; // Import the CustomAlert component
@@ -36,10 +37,21 @@ const Login = () => {
       // Save token to local storage
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
-      }
 
-      // Navigate to the dashboard or home page
-      navigate("/"); // Change to your desired route
+        // Decode the token to get user role
+        const decodedToken = jwtDecode(response.data.token);
+        const userRole = decodedToken.role; // Adjust this based on your token's structure
+
+        // Navigate based on user role
+        if (userRole === "admin") {
+          navigate("/admin-dashboard"); // Change to your admin dashboard route
+        } else if (userRole === "dealer") {
+          navigate("/dealership-dashboard"); // Change to your dealership dashboard route
+        } else {
+          // Handle unknown roles if necessary
+          setAlert({ message: "Unknown user role!", type: "error" });
+        }
+      }
     } catch (error) {
       console.error("There was an error logging in!", error);
       setAlert({ message: "There was an error logging in!", type: "error" });
@@ -94,7 +106,7 @@ const Login = () => {
               fill="#36454F"
               fillOpacity="0.5"
             />
-          </svg> 
+          </svg>
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>

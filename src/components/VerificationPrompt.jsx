@@ -51,9 +51,8 @@ const VerificationPrompt = () => {
       console.log('Error Response:', error.response); // Log the error response
       if (error.response) {
         return setMessage(`Failed to send verification link`);
-      } 
       }
-     finally {
+    } finally {
       setLoading(false);
     }
   };
