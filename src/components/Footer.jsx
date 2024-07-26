@@ -27,7 +27,7 @@ const Footer = () => {
               English
             </button>
             <span className="text-sm text-gray-600">
-              © 2024 Olamide Afolabi
+              © 2024 AUTOLEASE
             </span>
           </div>
         </div>
