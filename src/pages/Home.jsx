@@ -68,7 +68,7 @@ function Home() {
                         <h2 className="text-4xl font-bold">Discover Our Key Features and Benefits</h2>
                         <p>Our car rental service in Jos offers a wide range of vehicles, flexible rental options, and
                             comprehensive insurance coverage. Book online today for a worry-free driving experience.</p>
-                        <div className="flex justify-around my-4">
+                        <div className="flex justify-around my-4 sm:flex-row flex-col">
                             <div>
                                 <h3 className="font-bold">Wide Range of Vehicles</h3>
                                 <p className="mt-2">Choose from our wide selection of vehicles, ranging from compact cars to spacious SUVs.</p>
