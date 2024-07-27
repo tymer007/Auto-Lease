@@ -3,6 +3,7 @@ import Input from "../components/Input";
 import CustomAlert from "../components/customAlerts";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -235,7 +236,7 @@ const SignUp = () => {
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
             
-            {isLoading ? "Loading...":"Sign Up" }
+            {isLoading ? <LoadingSpinner />:"Sign Up" }
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
