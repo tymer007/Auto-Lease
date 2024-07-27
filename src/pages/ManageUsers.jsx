@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import AdminSidebar from '../components/AdminSidebar';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 
 const ManageUsersPage = () => {
@@ -43,12 +44,13 @@ const ManageUsersPage = () => {
   }, [navigate]);
 
   return (
-    <div className="py-8 px-4 md:px-8 lg:px-16">
+    <div >
         <Navbar/>
-        <AdminSidebar/>
+        <div className="py-8 px-4 md:px-8 lg:px-16">
+  <AdminSidebar/>
       <h2 className="text-3xl font-semibold mb-8">Manage Users</h2>
       {loading ? (
-        <p>Loading users...</p>
+        <LoadingSpinner />
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : users.length === 0 ? (
@@ -67,6 +69,8 @@ const ManageUsersPage = () => {
           ))}
         </div>
       )}
+        </div>
+      
       <Footer/>
     </div>
   );
