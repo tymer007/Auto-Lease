@@ -10,7 +10,8 @@ import AboutUs from './pages/AboutUs.jsx'
 import PageNotFound from './pages/PageNotFound.jsx'
 import SignUp from './pages/SignUp.jsx'
 import Login from './pages/Login.jsx'
-import CarDetails from './components/CarDetails.jsx'
+import CarRentalForm from './components/CarRentalForm.jsx'
+import CarBooking from './pages/CarBooking.jsx'
 import CheckoutPage from './pages/CheckoutPage.jsx'
 import DealershipApplicationPage from './pages/DealershipApplication.jsx'
 import VerificationPage from './pages/VerifyUser.jsx'
@@ -28,13 +29,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/contactus' element={< ContactUs />} />
       <Route path='/signup' element={< SignUp />} />
       <Route path='/login' element={< Login />} />
-      <Route path="/car/:id" element={<CarDetails />} />
+      <Route path="/rentcar/:id" element={<CarRentalForm />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/dealership" element={<DealershipApplicationPage />} />
       <Route path="/verify/:token" element={<VerificationPage />} />
       <Route path="/admin-dashboard" element={<AdminPage />} />
       <Route path="/admin/dealerships" element={<DealershipApplicationsPage />} />
       <Route path="/admin/users" element={<ManageUsersPage />} />
+      <Route path="/carbooking" element={<CarBooking />} />
       {/* <Route path="/dealership-dashboard" element={<DealershipDashboard />} /> */}
       
 

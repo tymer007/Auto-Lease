@@ -28,7 +28,7 @@ function Home() {
     };
 
     const handleCarClick = (car) => {
-        navigate(`/car/${car._id}`, { state: { car } });
+        navigate(`/rentcar/${car._id}`, { state: { car } });
     };
 
     const handleSearchClick = () => {
