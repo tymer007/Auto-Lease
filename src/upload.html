@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="output.css">
+    
+</head>
+<body>
+    <main class="pb-20">
+        <section class="h-96 bg-primary-purpler pt-8">
+            <div>
+                <div class="flex justify-center">
+                    <img src="/img/Autolease Dealerships.svg" alt="">
+                </div>
+                <div class="flex items-center gap-10">
+                    <div>
+                        <img src="/img/4-removebg-preview.png" alt="">
+                    </div>
+                    <div class="text-white">
+                        <h3 class="text-2xl font-semibold">Ekene Motors</h3>
+                        <p class="text-l">The automobile layout consist of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive</p>
+                    </div>
+                </div>
+                <button class="bg-white font-medium text-primary-purpler w-32 h-12 rounded-md text-xl">Edit Profile</button>
+            </div>
+        </section>
+        <section>
+            <div>
+                <img src="/img/Frame 346 (1).svg" alt="autolease logo">
+            </div>
+            <div class="grid justify-center pt-8">
+                <div class="border-primary-purpler border-2 rounded-xl">
+                    <div class="flex  p-2 font-bold">
+                        <div class="rounded-md bg-primary-purpler text-white px-24 py-3">UPLOAD</div>
+                        <div class="text-primary-purpler rounded-md px-24 py-3"><a href="post.html">POST</a></div>
+                    </div>
+                </div>
+                <form action="" class="text-xl font-medium grid justify-center pt-16">
+                    <div class="pb-4">
+                    <label for="vehicle-name">Vehicle Name</label><br>
+                    <input type="text" id="vehicle-name" name="vehicle-name"  class="border-2 border-black rounded-md h-10 w-96  shadow-md" required>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="vehicle-model">Vehicle Model</label><br>
+                    <input type="text" id="vehicle-model" name="vehicle-model"  class="border-2 border-black rounded-md h-10 w-96 shadow-md" required>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="vehicle-identification-number">Vehicle Identification Number(VIN)</label><br>
+                    <input type="text" id="vehicle-identification-number" name="vehicle-identification-number"  class="border-2 border-black rounded-md h-10 w-96 shadow-md" required>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="engine-type">Engine Type</label><br>
+                    <input type="text" id="engine-type" name="engine-type"  class="border-2 border-black rounded-md h-10 w-96 shadow-md" required>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="color">Color</label><br>
+                    <input type="text" id="color" name="color"  class="border-2 border-black rounded-md h-10 w-96 shadow-md" required>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="features-and-options">Features and Options</label><br>
+                    <input type="text" id="features-and-options" name="features-and-options"  class="border-2 border-black rounded-md h-10 w-96 shadow-md" required>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="imei">IMEI</label><br>
+                    <input type="text" id="imei" name="imei"  class="border-2 border-black rounded-md h-10 w-96" required>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="price">Price</label><br>
+                    <input type="text" id="price" name="price"  class="border-2 border-black rounded-md h-10 w-96 shadow-md" required>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="price-filter">Price Filter</label><br>
+                    <select name="price-filter" id="price-filter" class="border-2 border-black rounded-md h-10 w-96 shadow-md " required>
+                        <option value="p1" >Basic</option>
+                        <option value="p2">Luxury</option>
+                        <option value="p3">Classic</option>
+                    </select>
+                    </div>
+
+                    <div class="pb-4">
+                    <label for="vehicle-image">Upload Vehicle(You Can Upload Multiple)</label><br>
+                    <input type="file" accept="image/*" id="vehicle-image" name="vehicle-image" required>
+                    </div>
+
+                    <div>
+                    <input type="submit" value="Upload New Vehicle" class="bg-primary-purpler h-10 w-96 text-white text-xl font-semibold rounded-md">
+                    </div>
+
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

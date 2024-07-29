@@ -18,7 +18,8 @@ import VerificationPage from './pages/VerifyUser.jsx'
 import AdminPage from './pages/AdminPage.jsx'
 import DealershipApplicationsPage from './pages/DealershipApplications.jsx'
 import ManageUsersPage from './pages/ManageUsers.jsx'
-// import DealershipDashboard from './pages/DealershipDashboard.jsx'
+import DealershipDashboardPost from './pages/PostPage.jsx'
+import DealershipDashboardUpload from './pages/UploadPage.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -37,7 +38,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path="/admin/dealerships" element={<DealershipApplicationsPage />} />
       <Route path="/admin/users" element={<ManageUsersPage />} />
       <Route path="/carbooking" element={<CarBooking />} />
-      {/* <Route path="/dealership-dashboard" element={<DealershipDashboard />} /> */}
+      <Route path="/dealership-dashboard/post" element={<DealershipDashboardPost />} />
+      <Route path="/dealership-dashboard/upload" element={<DealershipDashboardUpload />} />
       
 
 
