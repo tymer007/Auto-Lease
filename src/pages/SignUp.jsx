@@ -4,6 +4,7 @@ import CustomAlert from "../components/customAlerts";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import FileUpload from "../components/FileUpload"; // Import your FileUpload component
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,9 @@ const SignUp = () => {
     hasEightChars: false,
     hasUpperCase: false,
     hasSpecialChar: false,
+    coverImage: null, // Add coverImage field
+    licenseFront: null, // Add licenseFront field
+    licenseBack: null, // Add licenseBack field
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -22,11 +26,16 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked, files } = e.target;
     if (type === "checkbox") {
       setFormData((prevData) => ({
         ...prevData,
         [name]: checked,
+      }));
+    } else if (type === "file") {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: files[0], // Update file field
       }));
     } else if (type === "password") {
       setFormData((prevData) => {
@@ -55,17 +64,35 @@ const SignUp = () => {
     // Perform field validation
     if (formData.password !== formData.passwordConfirm) {
       setAlert({ message: "Passwords do not match!", type: "error" });
+      return;
     }
 
     if (!formData.hasEightChars || !formData.hasUpperCase || !formData.hasSpecialChar) {
-        setAlert({ message: "Password does not meet all criteria!", type: "error" });
+      setAlert({ message: "Password does not meet all criteria!", type: "error" });
       return;
     }
+
+    // Create FormData object to handle file uploads
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("email", formData.email);
+    data.append("password", formData.password);
+    data.append("passwordConfirm", formData.passwordConfirm);
+    data.append("terms", formData.terms);
+    data.append("coverImage", formData.coverImage);
+    data.append("licenseFront", formData.licenseFront);
+    data.append("licenseBack", formData.licenseBack);
+
     setIsLoading(true);
     try {
       const response = await axios.post(
         "https://auto-lease-backend.onrender.com/api/v1/auth/sign-up",
-        formData
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       console.log(response.data);
 
@@ -79,15 +106,14 @@ const SignUp = () => {
     } catch (error) {
       console.error("There was an error submitting the form!", error);
       setAlert({ message: "There was an error submitting the form!", type: "error" });
-      // Handle error (e.g., show error message to user)
     } finally {
-        setIsLoading(false); // Set loading to false after submission is complete
-      }
+      setIsLoading(false); // Set loading to false after submission is complete
+    }
   };
 
   return (
     <div className="bg-autolease-pattern min-h-screen bg-gray-100 flex justify-center items-center relative">
-          {alert.message && (
+      {alert.message && (
         <CustomAlert
           message={alert.message}
           type={alert.type}
@@ -97,7 +123,7 @@ const SignUp = () => {
       <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
       <div className="absolute inset-0 bg-blue-900 opacity-50 z-0"></div>
       <div className="bg-white p-8 rounded-lg shadow-md w-96 relative z-10">
-        <div className="flex justify-center items-center h-44">
+      <div className="flex justify-center items-center h-44">
         <svg
             width="908"
             height="474"
@@ -151,7 +177,25 @@ const SignUp = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
+          /> {/* Add file upload components here */}
+          <FileUpload
+            label="Front of Driver's License"
+            name="frontOfId"
+            onChange={handleChange}
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md"
           />
+          {formData.licenseFront && (
+            <p className="text-green-500 text-sm">Front of Driver's License uploaded.</p>
+          )}
+          <FileUpload
+            label="Back of Driver's License"
+            name="backOfId"
+            onChange={handleChange}
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md"
+          />
+          {formData.licenseBack && (
+            <p className="text-green-500 text-sm">Back of Driver's License uploaded.</p>
+          )}
           <Input
             label="Password"
             type="password"
@@ -220,6 +264,7 @@ const SignUp = () => {
               onChange={handleChange}
               className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
             />
+            
             <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
               I have read and understood and agree to the{" "}
               <a href="#" className="text-indigo-600 hover:text-indigo-500">
@@ -231,18 +276,20 @@ const SignUp = () => {
               </a>
             </label>
           </div>
+
+         
+
           <button
             type="submit"
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
-            
-            {isLoading ? <LoadingSpinner />:"Sign Up" }
+            {isLoading ? <LoadingSpinner /> : "Sign Up"}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Login
+          <a href="/login" className="text-indigo-600 hover:text-indigo-500">
+            Log in
           </a>
         </p>
       </div>

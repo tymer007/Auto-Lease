@@ -1,37 +1,89 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
+import {jwtDecode} from 'jwt-decode'; // Corrected import statement
+import LoadingSpinner from '../components/LoadingSpinner';
+import autoLeaseDealerships from '../assets/autoleaseDealerships.svg';
+import littleCard from '../assets/littlecard.svg';
+import TabNavigation from '../components/TabNav';
+import CustomAlert from '../components/customAlerts';
+import Footer from '../components/Footer';
 
 const UploadPage = () => {
+  const [profile, setProfile] = useState({
+    name: '',
+    description: '',
+    coverImage: '',
+    summary: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [coverImageName, setCoverImageName] = useState('');
+  const [photosCount, setPhotosCount] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alert, setAlert] = useState({ message: '', type: '' });
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setAlert({ message: 'User not authenticated.', type: 'error' });
+        return;
+      }
+
+      try {
+        const decodedToken = jwtDecode(token);
+        const userIdFromToken = decodedToken.id; // Adjust based on your token's payload structure
+
+        if (!userIdFromToken) {
+          setAlert({ message: 'User ID not found in token.', type: 'error' });
+          return;
+        }
+
+        const response = await axios.get(`https://auto-lease-backend.onrender.com/api/v1/dealerships/${userIdFromToken}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        console.log('Profile Data:', response.data);
+        const dealership = response.data.data.dealership;
+
+        setProfile({
+          name: dealership.name || '',
+          description: dealership.summary || '',
+          coverImage: dealership.coverImage?.url || '/default-profile.png',
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching profile data:', err);
+        setError('Failed to fetch profile data. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Extract the token from local storage
     const token = localStorage.getItem('token');
-
     if (!token) {
-      alert('User not authenticated.');
+      setAlert({ message: 'User not authenticated.', type: 'error' });
+      setIsSubmitting(false);
       return;
     }
 
-    // Decode the token to get userId
-    let userId;
-    try {
-      const decodedToken = jwtDecode(token);
-      userId = decodedToken.userId; // Adjust based on your token's payload structure
-    } catch (err) {
-      console.error('Failed to decode token:', err);
-      alert('Failed to authenticate user.');
-      return;
-    }
+    const formData = new FormData(e.target);
+    const decodedToken = jwtDecode(token);
+    const userId = decodedToken.id;
 
     if (!userId) {
-      alert('User ID not found in token.');
+      setAlert({ message: 'User ID not found in token.', type: 'error' });
+      setIsSubmitting(false);
       return;
     }
-
-    // Create form data
-    const formData = new FormData(e.target);
 
     try {
       const response = await axios.post(
@@ -40,87 +92,119 @@ const UploadPage = () => {
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data', // Set the content type for FormData
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
-      alert('Vehicle uploaded successfully!');
-      // Handle successful response
+      setAlert({ message: 'Vehicle uploaded successfully.', type: 'success' });
+      setIsSubmitting(false);
     } catch (err) {
-      console.error('Failed to upload vehicle:', err); // Log error for debugging
-      alert('Failed to upload vehicle. Please try again.');
-      // Handle error response
+      console.error('Failed to upload vehicle:', err);
+      setAlert({ message: 'Failed to upload vehicle. Please try again.', type: 'error' });
+      setIsSubmitting(false);
     }
   };
+
+  const handleCoverImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCoverImageName(file.name);
+    }
+  };
+
+  const handlePhotosChange = (e) => {
+    const files = e.target.files;
+    setPhotosCount(files.length);
+  };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <CustomAlert message={error} type="error" />;
+  }
 
   return (
     <main className="min-h-screen bg-gray-100">
       <section className="bg-gray-700 text-white p-8">
         <div className="container mx-auto">
           <div className="flex justify-center mb-4">
-            <svg className="w-64 h-8" viewBox="0 0 200 24" fill="currentColor">
-              <text x="0" y="20" fontSize="24">AUTOLEASE DEALERSHIPS</text>
-            </svg>
+            <img src={autoLeaseDealerships} className="w-half" alt="" />
           </div>
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-gray-500 rounded-full"></div>
+            <img
+              src={profile.coverImage}
+              alt="Profile"
+              className="w-16 h-16 rounded-full"
+            />
             <div>
-              <h3 className="text-2xl font-semibold">Ekene Motors</h3>
-              <p className="text-sm">The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive</p>
+              <h3 className="text-2xl font-semibold">{profile.name}</h3>
+              <p className="text-sm">{profile.description}</p>
             </div>
           </div>
-          <button className="mt-4 bg-white text-gray-700 px-6 py-2 rounded-md text-sm font-medium">Edit Profile</button>
         </div>
       </section>
-      
+
+      <img src={littleCard} className="w-full" alt="" />
       <section className="container mx-auto mt-8 p-4">
         <div className="flex justify-center mb-8">
-          <svg className="w-64 h-8" viewBox="0 0 200 24" fill="currentColor">
-            <text x="0" y="20" fontSize="24">AUTOLEASE DEALERSHIPS</text>
-          </svg>
+          <h2 className="text-3xl font-bold">Autolease Dealerships</h2>
         </div>
-        
+
         <div className="max-w-2xl mx-auto">
-          <div className="flex border-2 border-purple-700 rounded-xl mb-8">
-            <div className="bg-purple-700 text-white px-12 py-3 rounded-l-xl font-bold">UPLOAD</div>
-            <div className="text-purple-700 px-12 py-3 font-bold"><a href="post.html">POST</a></div>
-          </div>
-          
+          <TabNavigation />
+
+          {alert.message && <CustomAlert message={alert.message} type={alert.type} />}
+
           <form onSubmit={handleSubmit} className="space-y-4">
-            <FormInput label="Vehicle Name" name="vehicle-name" type="text" />
-            <FormInput label="Vehicle Model" name="vehicle-model" type="text" />
-            <FormInput label="Vehicle Identification Number(VIN)" name="vehicle-identification-number" type="text" />
-            <FormInput label="Engine Type" name="engine-type" type="text" />
-            <FormInput label="Color" name="color" type="text" />
-            <FormInput label="Features and Options" name="features-and-options" type="text" />
-            <FormInput label="IMEI" name="imei" type="text" />
+            <FormInput label="Vehicle Name" name="name" type="text" />
+            <FormInput label="Vehicle Model" name="model" type="text" />
             <FormInput label="Price" name="price" type="text" />
-            
+            <FormInput label="Summary" name="summary" type="text" />
+
             <div>
-              <label htmlFor="price-filter" className="block text-sm font-medium mb-1">Price Filter</label>
-              <select name="price-filter" id="price-filter" className="w-full border-2 border-gray-300 rounded-md p-2 shadow-sm" required>
-                <option value="p1">Basic</option>
-                <option value="p2">Luxury</option>
-                <option value="p3">Classic</option>
+              <label htmlFor="category" className="block text-sm font-medium mb-1">Category</label>
+              <select name="category" id="category" className="w-full border-2 border-gray-300 rounded-md p-2 shadow-sm" required>
+                <option value="basic">Basic</option>
+                <option value="luxury">Luxury</option>
+                <option value="classic">Classic</option>
               </select>
             </div>
 
             <div>
-              <label htmlFor="vehicle-image" className="block text-sm font-medium mb-1">Upload Vehicle (You Can Upload Multiple)</label>
+              <label htmlFor="cover-image" className="block text-sm font-medium mb-1">Upload Cover Image</label>
               <div className="border-2 border-gray-300 rounded-md p-8 text-center">
                 <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <input type="file" accept="image/*" id="vehicle-image" name="vehicle-image" multiple required className="sr-only" />
+                <input type="file" accept="image/*" id="cover-image" name="coverImage" required className="sr-only" onChange={handleCoverImageChange} />
+                <label htmlFor="cover-image" className="mt-2 inline-block text-sm font-medium text-gray-700 cursor-pointer">Choose File</label>
+                {coverImageName && <p className="mt-2 text-sm text-gray-500">{coverImageName}</p>}
               </div>
             </div>
 
             <div>
-              <button type="submit" className="w-full bg-purple-700 text-white py-3 rounded-md text-lg font-semibold">Upload New Vehicle</button>
+              <label htmlFor="photos" className="block text-sm font-medium mb-1">Upload Photos</label>
+              <div className="border-2 border-gray-300 rounded-md p-8 text-center">
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <input type="file" accept="image/*" id="photos" name="photos" multiple required className="sr-only" onChange={handlePhotosChange} />
+                <label htmlFor="photos" className="mt-2 inline-block text-sm font-medium text-gray-700 cursor-pointer">Choose Files</label>
+                {photosCount > 0 && <p className="mt-2 text-sm text-gray-500">{photosCount} photos selected</p>}
+              </div>
+            </div>
+
+            <div>
+              <button type="submit" className="w-full bg-purple-700 text-white py-3 rounded-md text-lg font-semibold flex justify-center items-center">
+                {isSubmitting ? <LoadingSpinner /> : 'Upload New Vehicle'}
+              </button>
             </div>
           </form>
         </div>
       </section>
+      <Footer></Footer>
     </main>
   );
 };
