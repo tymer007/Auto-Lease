@@ -22,6 +22,7 @@ import DealershipDashboardPost from './pages/PostPage.jsx'
 import DealershipDashboardUpload from './pages/UploadPage.jsx'
 
 import DealershipDashboard from './pages/DealershipDashboard.jsx'
+import PaymentPage from './pages/PaymentPage.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -42,9 +43,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path="/carbooking" element={<CarBooking />} />
       <Route path="/dealership-dashboard/post" element={<DealershipDashboardPost />} />
       <Route path="/dealership-dashboard/upload" element={<DealershipDashboardUpload />} />
-
-      <Route path="/dealershipdashboard" element={<DealershipDashboard />} />
-
+      
 
 
 
