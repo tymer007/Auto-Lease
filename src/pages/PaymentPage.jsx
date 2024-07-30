@@ -8,8 +8,8 @@ import CustomAlert from '../components/customAlerts';
 import { Navigate } from 'react-router-dom';
 
 const PaymentPage = () => {
-    const location = useLocation();
-  const { price, email } = location.state;
+//     const location = useLocation();
+//   const { price, email } = location.state;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -27,11 +27,12 @@ const PaymentPage = () => {
   };
 
   const handleSubmit = (e) => {
+    const testKey = "sk_test_ae43312eb7d819bebd077e543a30af4288cdc044";
     e.preventDefault();
     setIsLoading(true); // Set loading to true
 
     const handler = window.PaystackPop.setup({
-      key: process.env.PAYSTACK_SECRET, // Replace with your Paystack public key
+      key: testKey, // Replace with your Paystack public key
       email: email,
       amount: price * 100, // Amount in kobo
       currency: 'NGN',
