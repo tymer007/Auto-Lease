@@ -45,10 +45,9 @@ const Login = () => {
         if (userRole === "admin") {
           navigate("/admin-dashboard"); // Change to your admin dashboard route
         } else if (userRole === "dealer") {
-          navigate("/dealership-dashboard"); // Change to your dealership dashboard route
+          navigate("/dealership-dashboard/post"); // Change to your dealership dashboard route
         } else {
-          // Handle unknown roles if necessary
-          setAlert({ message: "Unknown user role!", type: "error" });
+          navigate("/");
         }
       }
     } catch (error) {
