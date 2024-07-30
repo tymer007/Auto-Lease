@@ -64,7 +64,7 @@ const DealershipApplicationPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    const token = localStorage.getItem("token"); // Get token from local storage
+    const token = localStorage.getItem("token");
     if (!token) {
       setAlert({
         message: "You need to be logged in to submit this form.",
@@ -79,7 +79,7 @@ const DealershipApplicationPage = () => {
       for (const key in formData) {
         if (Array.isArray(formData[key])) {
           formData[key].forEach((file) => {
-            form.append(key, file); // No index here
+            form.append(key, file);
           });
         } else {
           form.append(key, formData[key]);
@@ -91,7 +91,7 @@ const DealershipApplicationPage = () => {
         form,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Attach token to headers
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -101,7 +101,9 @@ const DealershipApplicationPage = () => {
         message: "Application submitted successfully!",
         type: "success",
       });
-      navigate("/");
+      
+      // Redirect to the dealership dashboard post page
+      navigate("/dealership-dashboard/post");
     } catch (error) {
       console.error("There was an error submitting the form!", error);
       setAlert({

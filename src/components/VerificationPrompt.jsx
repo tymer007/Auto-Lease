@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {jwtDecode} from 'jwt-decode';
 import axios from 'axios';
+import LoadingSpinner from './LoadingSpinner';
 
 const VerificationPrompt = () => {
   const [isVerified, setIsVerified] = useState(null);
@@ -9,21 +9,35 @@ const VerificationPrompt = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        console.log('Decoded Token:', decodedToken); // Check the decoded token
-        setIsVerified(decodedToken.isVerified);
-        setEmail(decodedToken.email); // Assuming the token contains the user's email
-      } catch (error) {
-        console.error('Error decoding token:', error);
-        setMessage('Error decoding token.');
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setMessage('No token found. Please log in.');
+        return;
       }
-    } else {
-      console.log('No token found in localStorage');
-      setMessage('No token found. Please log in.');
-    }
+
+      setLoading(true);
+      try {
+        const response = await axios.get('https://auto-lease-backend.onrender.com/api/v1/users/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // Assuming the API response includes user data with `isVerified` and `email`
+        console.log(response);
+        const userData = response.data.data.user;
+        setIsVerified(userData.isVerified);
+        setEmail(userData.email);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setMessage('Error fetching user data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const handleRequestVerification = async () => {
@@ -50,19 +64,20 @@ const VerificationPrompt = () => {
       console.error('Error requesting verification:', error);
       console.log('Error Response:', error.response); // Log the error response
       if (error.response) {
-        return setMessage(`Failed to send verification link`);
+        setMessage('Failed to send verification link');
       }
     } finally {
       setLoading(false);
     }
   };
 
+  // Conditional rendering based on `isVerified` state
   if (isVerified === null) {
-    return <p>Loading...</p>; // Loading state
+    return <LoadingSpinner />; // Loading state
   }
 
   if (isVerified) {
-    return null;
+    return null; // Component is invisible if `isVerified` is true
   }
 
   return (

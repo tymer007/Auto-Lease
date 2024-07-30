@@ -2,10 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import { useNavigate, useParams } from 'react-router-dom';
+import CustomAlert from '../components/customAlerts'; // Import your CustomAlert component
+import LoadingSpinner from '../components/LoadingSpinner'; // Import your LoadingSpinner component
+import Navbar from '../components/Navbar'; // Import Navbar component
+import Footer from '../components/Footer'; // Import Footer component
+import Logo from "../assets/AutoLease.png"
 
 const CarRentalForm = () => {
     const { id } = useParams();
     const [car, setCar] = useState(null);
+    const [dealership, setDealership] = useState(null);
     const [step, setStep] = useState(1);
     const [pickupDate, setPickupDate] = useState('');
     const [pickupTime, setPickupTime] = useState('');
@@ -13,19 +19,39 @@ const CarRentalForm = () => {
     const [dropoffTime, setDropoffTime] = useState('');
     const [address, setAddress] = useState('');
     const [total, setTotal] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [alert, setAlert] = useState({ message: '', type: '' }); // State for CustomAlert
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchCar = async () => {
+        const fetchCarAndDealership = async () => {
+            const token = localStorage.getItem('token'); // Get the token from localStorage
+            if (!token) {
+                console.error("No token found in localStorage");
+                setAlert({ message: 'No token found. Please log in.', type: 'error' });
+                return;
+            }
             try {
-                const response = await axios.get(`https://auto-lease-backend.onrender.com/api/v1/cars/${id}`);
-                setCar(response.data.data.car);
-                console.log(response.data);
+                console.log("Fetching car data...");
+                const carResponse = await axios.get(`https://auto-lease-backend.onrender.com/api/v1/cars/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                console.log("Car data fetched:", carResponse.data);
+                const carData = carResponse.data.data.car;
+                setCar(carData);
+
+                console.log("Fetching dealership data...");
+                const dealershipResponse = await axios.get(`https://auto-lease-backend.onrender.com/api/v1/dealerships/${carData.dealership}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                console.log("Dealership data fetched:", dealershipResponse.data);
+                setDealership(dealershipResponse.data.data.dealership);
             } catch (error) {
-                console.error("Error fetching car details:", error);
+                console.error("Error fetching car or dealership details:", error);
+                setAlert({ message: 'Failed to fetch car or dealership details', type: 'error' });
             }
         };
-        fetchCar();
+        fetchCarAndDealership();
     }, [id]);
 
     useEffect(() => {
@@ -33,18 +59,20 @@ const CarRentalForm = () => {
             const startDate = new Date(pickupDate);
             const endDate = new Date(dropoffDate);
             const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-            let cost = days * car.price;
+            const price = Number(car.price) || 0; // Cast to number, default to 0 if NaN
+            const fee = Number(car.fee) || 0; // Cast to number, default to 0 if NaN
+            let cost = days * price;
             if (car.discount > 0) {
                 cost *= (1 - car.discount / 100);
             }
-            const totalCost = cost + car.fee;
+            const totalCost = cost + fee;
             setTotal(totalCost);
         }
     }, [pickupDate, dropoffDate, car]);
 
     const handleNext = () => {
         if (step === 1 && (!pickupDate || !pickupTime || !address || !dropoffDate || !dropoffTime)) {
-            alert('All fields are required.');
+            setAlert({ message: 'All fields are required.', type: 'warning' });
         } else {
             setStep(step + 1);
         }
@@ -58,223 +86,194 @@ const CarRentalForm = () => {
         navigate(-1);
     };
 
-    const handlePaymentSuccess = () => {
-        setStep(step + 1);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        const bookingData = {
+            car: id,
+            pickupTime: new Date(`${pickupDate}T${pickupTime}`),
+            pickupDate: new Date(pickupDate),
+            dropoffDate: new Date(dropoffDate),
+            dropoffTime: new Date(`${dropoffDate}T${dropoffTime}`),
+            deliveryFee: Number(car.fee) || 0, // Ensure deliveryFee is a number
+        };
+
+        console.log("Booking Data:", bookingData);
+
+        try {
+            // Submit booking data
+            const response = await axios.post(`https://auto-lease-backend.onrender.com/api/v1/bookings/${id}`, bookingData, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (response.data.status === 'success') {
+                // Fetch user email
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('No token found');
+                }
+
+                const userResponse = await axios.get('https://auto-lease-backend.onrender.com/api/v1/users/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                console.log("User Response:", userResponse.data.data);
+                const userEmail = userResponse.data.data.user.email;
+
+                // Check if email is valid
+                if (typeof userEmail !== 'string' || !userEmail.includes('@')) {
+                    throw new Error('Invalid email address');
+                }
+
+                console.log("User Email:", userEmail);
+
+                // Setup Paystack
+                const handler = window.PaystackPop.setup({
+                    key: "pk_test_a36077fa842e2748bed420b96ae7c81b2c091b8c", // Use the environment variable for the Paystack key
+                    email: userEmail,
+                    amount: total * 100, // Amount in kobo
+                    currency: 'NGN',
+                    callback: function (response) {
+                        setIsLoading(false);
+                        if (response.status === 'success') {
+                            setStep(3); // Move to the receipt download step
+                            setAlert({ message: 'Payment Successful', type: 'success' });
+                            handleDownload(); // Generate and download the receipt
+                        } else {
+                            setAlert({ message: 'Payment Failed', type: 'error' });
+                        }
+                    },
+                    onClose: function () {
+                        setIsLoading(false);
+                        setAlert({ message: 'Payment Cancelled', type: 'info' });
+                    }
+                });
+
+                handler.openIframe();
+            } else {
+                setIsLoading(false);
+                setAlert({ message: 'Booking Failed', type: 'error' });
+            }
+        } catch (error) {
+            setIsLoading(false);
+            console.error("Error submitting booking:", error);
+            setAlert({ message: 'Error submitting booking', type: 'error' });
+        }
     };
 
     const handleDownload = () => {
         const doc = new jsPDF();
-        doc.text(`Pickup Date & Time: ${pickupDate} ${pickupTime}`, 10, 10);
-        doc.text(`Drop-off Date & Time: ${dropoffDate} ${dropoffTime}`, 10, 20);
-        doc.text(`Total Paid: $${total.toFixed(2)}`, 10, 30);
-        doc.save('receipt.pdf');
+        const pageWidth = doc.internal.pageSize.width;
+        const margin = 20;
+
+        // Set up logo placeholder
+        doc.rect(margin, margin, 40, 20); // Placeholder rectangle for logo
+        doc.setFontSize(10);
+        doc.addImage(Logo, 'PNG', margin, margin, 40, 20);
+
+        // Title
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(24);
+        doc.text('Autolease Receipt', pageWidth / 2, margin + 30, { align: 'center' });
+
+        // Underline the title
+        const titleWidth = doc.getTextWidth('Autolease Receipt');
+        doc.setLineWidth(0.5);
+        doc.line(pageWidth / 2 - titleWidth / 2, margin + 32, pageWidth / 2 + titleWidth / 2, margin + 32);
+
+        // Set font for body text
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+
+        // Add content
+        let yPos = margin + 45;
+        const lineHeight = 8;
+
+        const addText = (text) => {
+            doc.text(text, margin, yPos);
+            yPos += lineHeight;
+        };
+
+        addText(`Pickup: ${new Date(`${pickupDate}T${pickupTime}`).toLocaleString()}`);
+        addText(`Drop-off: ${new Date(`${dropoffDate}T${dropoffTime}`).toLocaleString()}`);
+        addText(`Car: ${car.name} (${car.model})`);
+
+        if (dealership) {
+            addText(`Dealership: ${dealership.name}`);
+        }
+
+        yPos += lineHeight; // Add some space
+
+        // Total in a box
+        doc.setFillColor(240, 240, 240); // Light gray background
+        doc.rect(margin, yPos - 5, pageWidth - margin * 2, lineHeight + 2, 'F');
+        doc.setFont("helvetica", "bold");
+        addText(`Total: NGN ${total.toFixed(2)}`);
+
+        // Footer
+        yPos = doc.internal.pageSize.height - margin;
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(10);
+        doc.text("Thank you for choosing Autolease!", margin, yPos);
+        doc.text("For inquiries, contact support@autolease.com", margin, yPos + lineHeight);
+
+        // Save the PDF
+        doc.save("Autolease_Receipt.pdf");
     };
 
-    const date = new Date();
-
-    if (!car) return <div>Loading...</div>;
-
     return (
-        <div className="p-4">
-            {step === 1 && (
-                <div>
-                    <div className="max-w-sm mx-auto bg-white rounded-lg overflow-hidden md:max-w-md mt-8">
-                        <div className="p-4 flex items-center justify-between">
-                            <h2 className="text-2xl font-semibold text-gray-800">{car.name}</h2>
-                            <span className="text-base text-gray-500 border p-1 rounded-lg">{car.category}</span>
-                        </div>
-                        <div className="flex justify-center p-4 rounded-xl shadow-2xl border-2 z-10">
-                            <img src={car.coverImage.url} alt={car.name} className="w-full h-48 object-cover rounded" />
-                            {/* <img src={car.coverImage.url} alt={car.name} className="w-full h-48 object-cover rounded" /> */}
-                        </div>
-                        <div className="px-4 pb-4">
-                            <p className="text-gray-700 mt-4 text-center pt-2">
-                                <strong>Dealership:</strong> {car.dealership}
-                            </p>
-                            <p className="text-gray-700 mb-4 text-center">
-                                {car.model}
-                            </p>
-                            <div className="space-y-4">
-                                <form className="space-y-4">
-                                    <label className="block">
-                                        Pick-Up Date
-                                        <input className="border rounded px-2 py-1 w-full" type="date" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} required />
-                                    </label>
-                                    <label className="block">
-                                        Pick-Up Time
-                                        <input className="border rounded px-2 py-1 w-full" type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} min="09:00" max="17:00" required />
-                                    </label>
-                                    <label className="block">
-                                        Drop-Off Date
-                                        <input className="border rounded px-2 py-1 w-full" type="date" value={dropoffDate} onChange={(e) => setDropoffDate(e.target.value)} required />
-                                    </label>
-                                    <label className="block">
-                                        Drop-0ff Time
-                                        <input className="border rounded px-2 py-1 w-full" type="time" value={dropoffTime} onChange={(e) => setDropoffTime(e.target.value)} min="09:00" max="17:00" required />
-                                    </label>
-                                    <label className="block">
-                                        Address
-                                        <input className="border rounded px-2 py-1 w-full" type="text" value={address} placeholder='Address' onChange={(e) => setAddress(e.target.value)} />
-                                    </label>
-                                </form>
+        <>
+            <Navbar />
+            <div className="container mx-auto mt-8 p-4 max-w-lg">
+                {isLoading && <LoadingSpinner />} {/* Display the spinner when loading */}
+                {alert.message && <CustomAlert message={alert.message} type={alert.type} />} {/* Custom Alert */}
+                <h2 className="text-2xl font-bold mb-4">Car Rental Form</h2>
+                <form onSubmit={handleSubmit}>
+                    {step === 1 && (
+                        <>
+                            <div className="mb-4">
+                                <label htmlFor="pickupDate" className="block text-sm font-medium text-gray-700">Pickup Date</label>
+                                <input type="date" id="pickupDate" value={pickupDate} onChange={(e) => setPickupDate(e.target.value)} className="mt-1 block w-full" />
                             </div>
-                            <div className="flex items-center justify-between mt-6 gap-1">
-                                <span className="w-fit text-xs p-0.5 text-white text-center bg-gray-800 rounded">Rental Fee</span>
-                                <span className="text-xl py-1 font-bold border w-full text-center border-gray-800 rounded">₦ {car.price}</span>
+                            <div className="mb-4">
+                                <label htmlFor="pickupTime" className="block text-sm font-medium text-gray-700">Pickup Time</label>
+                                <input type="time" id="pickupTime" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} className="mt-1 block w-full" />
                             </div>
-                            <div className="flex items-center justify-between gap-1 pt-2">
-                                <button className="w-fit text-xs p-0.5 text-center rounded border-gray-800 border" type="button" onClick={handleCancel}>Cancel Booking</button>
-                                <button className="text-xl py-1 font-bold border w-full text-center border-gray-800 rounded bg-gray-800 text-white" type="button" onClick={handleNext}>Next</button>
+                            <div className="mb-4">
+                                <label htmlFor="dropoffDate" className="block text-sm font-medium text-gray-700">Drop-off Date</label>
+                                <input type="date" id="dropoffDate" value={dropoffDate} onChange={(e) => setDropoffDate(e.target.value)} className="mt-1 block w-full" />
                             </div>
+                            <div className="mb-4">
+                                <label htmlFor="dropoffTime" className="block text-sm font-medium text-gray-700">Drop-off Time</label>
+                                <input type="time" id="dropoffTime" value={dropoffTime} onChange={(e) => setDropoffTime(e.target.value)} className="mt-1 block w-full" />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="address" className="block text-sm font-medium text-gray-700">Delivery Address</label>
+                                <input type="text" id="address" value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1 block w-full" />
+                            </div>
+                            <button type="button" onClick={handleNext} className="btn btn-primary">Next</button>
+                        </>
+                    )}
+                    {step === 2 && (
+                        <>
+                            <div className="mb-4">
+                                <label htmlFor="total" className="block text-sm font-medium text-gray-700">Total Cost (NGN)</label>
+                                <input type="text" id="total" value={total.toFixed(2)} readOnly className="mt-1 block w-full" />
+                            </div>
+                            <button type="button" onClick={handleBack} className="btn btn-secondary">Back</button>
+                            <button type="submit" className="btn btn-primary">Confirm & Pay</button>
+                        </>
+                    )}
+                    {step === 3 && (
+                        <div>
+                            <p className="text-green-500 font-bold">Payment Successful! Download your receipt below.</p>
+                            <button type="button" onClick={handleDownload} className="btn btn-primary">Download Receipt</button>
                         </div>
-                    </div>
-                </div>
-            )}
-            {step === 2 && (
-                <div className='max-w-sm mx-auto bg-white rounded-lg overflow-hidden md:max-w-md mt-8 flex flex-col items-center justify-center'>
-                    <h1 className="text-2xl font-bold">Summary</h1>
-                    <div className='w-11/12 shadow-2xl px-2 rounded-lg p-3'>
-                        <img src="/frame_330.svg" alt="" className='' />
-                        <div className='flex justify-between text-gray-500'>
-                            <div>Autolease Reciept</div>
-                            <div>{pickupDate}</div>
-                        </div>
-                        <div className='flex justify-between pt-2 px-1'>
-                            <div>Car Name</div>
-                            <div>{car.name}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Car Model</div>
-                            <div>{car.model}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Pick-Up Date</div>
-                            <div>{pickupDate}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Drop Off Date</div>
-                            <div>{dropoffDate}</div>
-                        </div>
-                        <hr className='my-3 border-slate-900 mx-1' />
-                        <div className='flex justify-between px-1'>
-                            <div>{car.name} - {car.model}</div>
-                            <div>₦{car.price}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Number of Days</div>
-                            <div>x{Math.ceil((new Date(dropoffDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24))}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Applied Discount</div>
-                            <div>{car.discount}%</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Delivery fee</div>
-                            <div>+ ₦{car.fee}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Total</div>
-                            <div>₦{total.toFixed(2)}</div>
-                        </div>
-                    </div>
-                    <form className="space-y-4">
-                        <div className="flex items-center justify-between gap-1 pt-2">
-                            <button className="w-fit text-xs p-2.5 text-center rounded border-gray-800 border" type="button" onClick={handleBack}>Back</button>
-                            <button className="text-xl py-1 font-bold border w-full text-center border-gray-800 rounded bg-gray-800 text-white px-4" type="button" onClick={handleNext}>Checkout [₦{total.toFixed(2)}]</button>
-                        </div>
-                    </form>
-                </div>
-            )}
-            {step === 3 && (
-                <div className='max-w-sm mx-auto bg-white rounded-lg overflow-hidden md:max-w-md mt-8'>
-                    {/* You cook here bro */}
-                    <img src="" alt="" />
-                    <h1 className="text-2xl font-bold mb-4">Payment</h1>
-                    <p>Total Amount: ${total.toFixed(2)}</p>
-                    <form className="space-y-4">
-                        <label className="block">
-                            Card Number:
-                            <input className="border rounded px-2 py-1" type="text" required />
-                        </label>
-                        <label className="block">
-                            Expiry Date:
-                            <input className="border rounded px-2 py-1" type="text" required />
-                        </label>
-                        <label className="block">
-                            CVV:
-                            <input className="border rounded px-2 py-1" type="text" required />
-                        </label>
-                        <button className="bg-gray-500 text-white px-4 py-2 rounded" type="button" onClick={handleBack}>Back</button>
-                        <button className="bg-blue-500 text-white px-4 py-2 rounded" type="button" onClick={handlePaymentSuccess}>Successful Payment</button>
-                        <button className="text-xl py-1 font-bold border w-full text-center border-gray-800 rounded bg-gray-800 text-white px-4" type="button" onClick={handleNext}>Checkout [₦{total.toFixed(2)}]</button>
-                    </form>
-                </div>
-            )}
-            {step === 4 && (
-                <div className='max-w-sm mx-auto bg-white rounded-lg overflow-hidden md:max-w-md mt-8 flex flex-col items-center'>
-                    <h1 className="text-2xl font-bold mb-4 text-center text-slate-700">Payment Successful!</h1>
-
-                    <div className='w-11/12 shadow-2xl px-2 rounded-lg p-3'>
-                        <img src="/frame_330.svg" alt="" className='' />
-                        <div className='flex justify-between text-gray-500'>
-                            <div>Autolease Reciept</div>
-                            <div>{pickupDate}</div>
-                        </div>
-                        <div className='flex justify-between pt-2 px-1'>
-                            <div>Name</div>
-                            <div>David Dangtim (fetcth it bro)</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Address</div>
-                            <div>{address}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Order No.</div>
-                            <div>Fill it in bro</div>
-                        </div>
-                        <hr className='my-3 border-slate-900 mx-1' />
-                        <div className='flex justify-between pt-2 px-1'>
-                            <div>Car Name</div>
-                            <div>{car.name}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Car Model</div>
-                            <div>{car.model}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Pick-Up Date</div>
-                            <div>{pickupDate}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Drop Off Date</div>
-                            <div>{dropoffDate}</div>
-                        </div>
-                        <hr className='my-3 border-slate-900 mx-1' />
-                        <div className='flex justify-between px-1'>
-                            <div>{car.name} - {car.model}</div>
-                            <div>₦{car.price}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Number of Days</div>
-                            <div>x{Math.ceil((new Date(dropoffDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24))}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Applied Discount</div>
-                            <div>{car.discount}%</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Delivery fee</div>
-                            <div>+ ₦{car.fee}</div>
-                        </div>
-                        <div className='flex justify-between px-1'>
-                            <div>Total Paid (should fetch plus paystack charges)</div>
-                            <div>₦{total.toFixed(2)}</div>
-                        </div>
-                    </div>
-                    <button className="text-center w-4/5 font-bold text-white px-4 py-2 rounded bg-slate-800 mt-4" onClick={handleDownload}>Download Receipt</button>
-                </div>
-            )}
-        </div>
+                    )}
+                </form>
+            </div>
+            <Footer />
+        </>
     );
 };
 
