@@ -31,7 +31,7 @@ const PaymentPage = () => {
     setIsLoading(true); // Set loading to true
 
     const handler = window.PaystackPop.setup({
-      key: 'YOUR_PUBLIC_KEY', // Replace with your Paystack public key
+      key: process.env.PAYSTACK_SECRET, // Replace with your Paystack public key
       email: email,
       amount: price * 100, // Amount in kobo
       currency: 'NGN',
