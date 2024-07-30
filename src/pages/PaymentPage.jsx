@@ -27,14 +27,14 @@ const PaymentPage = () => {
   };
 
   const handleSubmit = (e) => {
-    const testKey = "sk_test_ae43312eb7d819bebd077e543a30af4288cdc044";
+    const testKey = process.env.PAYSTACK_PUBLIC;
     e.preventDefault();
     setIsLoading(true); // Set loading to true
 
     const handler = window.PaystackPop.setup({
       key: testKey, // Replace with your Paystack public key
-      email: email,
-      amount: price * 100, // Amount in kobo
+      email: "dangtimdavid021@gmail.com",
+      amount: 20000 * 100, // Amount in kobo
       currency: 'NGN',
       callback: function (response) {
         setIsLoading(false); // Set loading to false
