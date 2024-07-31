@@ -128,30 +128,21 @@ const CarRentalForm = () => {
                 console.log("User Email:", userEmail);
 
                 // Setup Paystack
-                const handler = new PaystackPop(); // Use new PaystackPop() instead of window.PaystackPop.setup()
+                const handler = new PaystackPop();
 
                 handler.newTransaction({
-                    key: "pk_test_a36077fa842e2748bed420b96ae7c81b2c091b8c", // Use the environment variable for the Paystack key
-                    email: userEmail,
-                    amount: Math.round(total) * 100, // Convert total to kobo by multiplying by 100 and rounding to the nearest integer
+                    key: "pk_test_a36077fa842e2748bed420b96ae7c81b2c091b8c",
+                    email: userEmail || "test@example.com", // Use a default email for testing
+                    amount: 10000, // Set a small amount (e.g., ₦100) for testing
                     currency: 'NGN',
-                    onSuccess: function (response) { // Use onSuccess instead of callback
-                        setIsLoading(false);
-                        if (response.status === 'success') {
-                            setStep(3); // Move to the receipt download step
-                            setAlert({ message: 'Payment Successful', type: 'success' });
-                            handleDownload(); // Generate and download the receipt
-                        } else {
-                            setAlert({ message: 'Payment Failed', type: 'error' });
-                        }
+                    onSuccess: function (response) {
+                        console.log('Payment Successful', response);
                     },
-                    onCancel: function () { // Use onCancel instead of onClose
-                        setIsLoading(false);
-                        setAlert({ message: 'Payment Cancelled', type: 'info' });
+                    onCancel: function () {
+                        console.log('Payment Cancelled');
                     }
                 });
                 
-                // Use open() instead of openIframe()
                 handler.open();
                 setIsLoading(false);
                 setAlert({ message: 'Booking Failed', type: 'error' });
