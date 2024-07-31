@@ -65,7 +65,7 @@ function AboutUs() {
         <section className="text-start mt-12">
                     <div className="relative bg-autoPurple text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
                     <img
-              src="Frame430.svg"
+              src="Frame430.png"
               alt="Background"
               className="absolute inset-0 w-full h-full object-cover"
             />
