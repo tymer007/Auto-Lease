@@ -1,10 +1,10 @@
 import React from "react";
-import logo from '../assets/AutoLease.png'
+import logo from '../assets/AutoLease.png';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-white text-gray-800 py-8">
+    <footer className="w-full bg-white text-gray-800 py-8 shadow-2xl shadow-gray-500/50">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex flex-col items-center justify-center space-y-6">
           <Link to="/" className="text-4xl font-bold text-gray-800">
@@ -37,3 +37,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
