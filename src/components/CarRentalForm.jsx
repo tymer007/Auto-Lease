@@ -131,7 +131,7 @@ const CarRentalForm = () => {
                 const handler = window.PaystackPop.setup({
                     key: "pk_test_a36077fa842e2748bed420b96ae7c81b2c091b8c", // Use the environment variable for the Paystack key
                     email: userEmail,
-                    amount: total * 100, // Amount in kobo
+                    amount: Math.round(total) * 100, // Convert total to kobo by multiplying by 100 and rounding to the nearest integer
                     currency: 'NGN',
                     callback: function (response) {
                         setIsLoading(false);
@@ -148,9 +148,8 @@ const CarRentalForm = () => {
                         setAlert({ message: 'Payment Cancelled', type: 'info' });
                     }
                 });
-
+                
                 handler.openIframe();
-            } else {
                 setIsLoading(false);
                 setAlert({ message: 'Booking Failed', type: 'error' });
             }
@@ -227,6 +226,8 @@ const CarRentalForm = () => {
             <div className="container mx-auto mt-8 p-4 max-w-lg">
                 {isLoading && <LoadingSpinner />} {/* Display the spinner when loading */}
                 {alert.message && <CustomAlert message={alert.message} type={alert.type} />} {/* Custom Alert */}
+                <CarAndDealershipCard car={car} dealership={dealership} />
+
                 <h2 className="text-2xl font-bold mb-4">Car Rental Form</h2>
                 <form onSubmit={handleSubmit}>
                     {step === 1 && (
@@ -251,7 +252,7 @@ const CarRentalForm = () => {
                                 <label htmlFor="address" className="block text-sm font-medium text-gray-700">Delivery Address</label>
                                 <input type="text" id="address" value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1 block w-full" />
                             </div>
-                            <button type="button" onClick={handleNext} className="btn btn-primary">Next</button>
+                            <button type="button" onClick={handleNext} className="bg-autoPurple hover:bg-autoCream hover:text-autoPurple hover:border-autoPurple text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Next</button>
                         </>
                     )}
                     {step === 2 && (
@@ -260,8 +261,8 @@ const CarRentalForm = () => {
                                 <label htmlFor="total" className="block text-sm font-medium text-gray-700">Total Cost (NGN)</label>
                                 <input type="text" id="total" value={total.toFixed(2)} readOnly className="mt-1 block w-full" />
                             </div>
-                            <button type="button" onClick={handleBack} className="btn btn-secondary">Back</button>
-                            <button type="submit" className="btn btn-primary">Confirm & Pay</button>
+                            <button type="button" onClick={handleBack} className="px-4 py-2 mr-4 text-gray-700 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">Back</button>
+                            <button type="submit" className="px-4 py-2 text-white bg-autoPurple rounded hover:bg-autoCream hover:text-autoPurple focus:outline-none focus:ring-2 focus:ring-autoCream">Confirm & Pay</button>
                         </>
                     )}
                     {step === 3 && (
@@ -276,5 +277,44 @@ const CarRentalForm = () => {
         </>
     );
 };
+
+const CarAndDealershipCard = ({ car, dealership }) => {
+    if (!car || !dealership) return null;
+  
+    return (
+      <div className="bg-white shadow-md rounded-lg p-6 mb-6 max-w-md mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <div className='w-full'>
+          <img src={Logo} alt="Autolease Logo" className="h-10 w-half " />
+
+          </div>
+        </div>
+        
+        <div className="border-t border-b border-gray-200 py-4 mb-4">
+          <h4 className="text-lg font-semibold mb-2">Car Details</h4>
+          <p className="text-gray-700"><span className="font-medium">Car:</span> {car.name} ({car.model})</p>
+          <img src={car.coverImage.url} alt="Cover Image" />
+          <p className="text-gray-700"><span className="font-medium">Price per day:</span> NGN {car.price}</p>
+          {car.discount > 0 && <p className="text-gray-700"><span className="font-medium">Discount:</span> {car.discount}%</p>}
+        </div>
+  
+        <div className="mb-4">
+          <h4 className="text-lg font-semibold mb-2">Dealership</h4>
+          <p className="text-gray-700"><span className="font-medium">Name:</span> {dealership.name}</p>
+        </div>
+  
+        <div className="bg-gray-100 p-3 rounded-md">
+          <p className="text-lg font-bold text-gray-800">Total: NGN {calculateTotal(car)}</p>
+        </div>
+      </div>
+    );
+  };
+  
+  // Helper function to calculate total (you may need to adjust this based on your actual pricing logic)
+  const calculateTotal = (car) => {
+    const basePrice = parseFloat(car.price);
+    const discountedPrice = car.discount > 0 ? basePrice * (1 - car.discount / 100) : basePrice;
+    return discountedPrice.toFixed(2);
+  };
 
 export default CarRentalForm;
