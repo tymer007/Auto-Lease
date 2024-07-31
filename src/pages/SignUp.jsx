@@ -112,7 +112,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="bg-autolease-pattern min-h-screen bg-gray-100 flex justify-center items-center relative">
+    <div className="bg-autolease-pattern min-h-screen bg-gray-100 flex justify-center items-center relative py-10">
       {alert.message && (
         <CustomAlert
           message={alert.message}
@@ -121,7 +121,7 @@ const SignUp = () => {
         />
       )}
       <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
-      <div className="absolute inset-0 bg-blue-900 opacity-50 z-0"></div>
+      <div className="absolute inset-0 bg-slate-900 opacity-50 z-0"></div>
       <div className="bg-white p-8 rounded-lg shadow-md w-96 relative z-10">
       <div className="flex justify-center items-center h-44">
         <svg
@@ -288,7 +288,7 @@ const SignUp = () => {
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <a href="/login" className="text-indigo-600 hover:text-indigo-500">
+          <a href="/login" className="text-indigo-600 hover:text-slate-500">
             Log in
           </a>
         </p>

@@ -111,6 +111,7 @@ const CarRentalForm = () => {
                 // Fetch user email
                 const token = localStorage.getItem('token');
                 if (!token) {
+                    navigate("/login");
                     throw new Error('No token found');
                 }
 
@@ -128,30 +129,32 @@ const CarRentalForm = () => {
                 console.log("User Email:", userEmail);
 
                 // Setup Paystack
-                const handler = window.PaystackPop.setup({
-                    key: "pk_test_a36077fa842e2748bed420b96ae7c81b2c091b8c", // Use the environment variable for the Paystack key
+                const handler = new PaystackPop();
+
+                handler.newTransaction({
+                    key: "pk_test_a36077fa842e2748bed420b96ae7c81b2c091b8c",
                     email: userEmail,
                     amount: Math.round(total) * 100, // Convert total to kobo by multiplying by 100 and rounding to the nearest integer
                     currency: 'NGN',
-                    callback: function (response) {
+                    onSuccess: function (response) { // Use onSuccess instead of callback
                         setIsLoading(false);
                         if (response.status === 'success') {
-                            setStep(3); // Move to the receipt download step
-                            setAlert({ message: 'Payment Successful', type: 'success' });
+                            ({ message: 'Payment Successful', type: 'success' });
                             handleDownload(); // Generate and download the receipt
                         } else {
                             setAlert({ message: 'Payment Failed', type: 'error' });
                         }
                     },
-                    onClose: function () {
+                    onCancel: function () { // Use onCancel instead of onClose
                         setIsLoading(false);
                         setAlert({ message: 'Payment Cancelled', type: 'info' });
                     }
                 });
                 
-                handler.openIframe();
+                // Use open() instead of openIframe()
+                handler.open();
                 setIsLoading(false);
-                setAlert({ message: 'Booking Failed', type: 'error' });
+                setAlert({ message: 'Booking Submitting', type: 'success' });
             }
         } catch (error) {
             setIsLoading(false);
