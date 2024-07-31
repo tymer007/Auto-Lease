@@ -67,7 +67,7 @@ function AboutUs() {
                     <div className="relative bg-autoPurple text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
                     <img
               src={picture}
-              alt="Background"
+              alt=""
               className="absolute inset-0 w-full h-full object-cover"
             />
                         <div className="relative z-10">
