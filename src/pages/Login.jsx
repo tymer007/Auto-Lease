@@ -68,7 +68,7 @@ const Login = () => {
         />
       )}
       <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
-      <div className="absolute inset-0 bg-blue-900 opacity-50 z-0"></div>
+      <div className="absolute inset-0 bg-slate-900 opacity-50 z-0"></div>
       <div className="bg-white p-8 rounded-lg shadow-md w-96 relative z-10">
       <div className="flex justify-center items-center h-44">
         <svg
@@ -144,7 +144,7 @@ const Login = () => {
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">
           Don't have an account?{" "}
-          <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <a href="/signup" className="font-medium text-slate-600 hover:text-slate-500">
             Sign Up
           </a>
         </p>
