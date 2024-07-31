@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/LogoCream.png"; // Adjust the path as necessary
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    // Check if the token exists in local storage
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token); // Set isLoggedIn to true if token exists, false otherwise
+  }, []);
 
   const onToggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  const handleLogout = () => {
+    // Remove token from local storage and update state
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
   };
 
   const linkStyle = (path) =>
@@ -43,18 +56,29 @@ const Navbar = () => {
           </ul>
         </div>
         <div className="hidden md:flex items-center gap-6">
-          <Link 
-            to="/login" 
-            className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300"
-          >
-            Log In
-          </Link>
-          <Link 
-            to="/signup" 
-            className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300"
-          >
-            Sign Up
-          </Link>
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300"
+            >
+              Log Out
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300"
+              >
+                Log In
+              </Link>
+              <Link
+                to="/signup"
+                className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
         <div className="md:hidden flex items-center">
           <button
@@ -83,22 +107,35 @@ const Navbar = () => {
                 Contact Us
               </Link>
             </li>
-            <li>
-              <Link 
-                to="/login" 
-                className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300"
-              >
-                Log In
-              </Link>
-            </li>
-            <li>
-              <Link 
-                to="/signup" 
-                className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300"
-              >
-                Sign Up
-              </Link>
-            </li>
+            {isLoggedIn ? (
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300"
+                >
+                  Log Out
+                </button>
+              </li>
+            ) : (
+              <>
+                <li>
+                  <Link
+                    to="/login"
+                    className="border border-autoCream text-autoCream px-4 py-2 rounded hover:bg-autoCream hover:text-autoPurple transition duration-300"
+                  >
+                    Log In
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/signup"
+                    className="bg-autoCream text-autoPurple px-5 py-2 rounded hover:bg-transparent hover:text-autoCream hover:border hover:border-autoCream transition duration-300"
+                  >
+                    Sign Up
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       )}
