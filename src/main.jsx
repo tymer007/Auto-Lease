@@ -23,6 +23,8 @@ import DealershipDashboardUpload from './pages/UploadPage.jsx'
 import DealershipDashboard from './pages/DealershipDashboard.jsx'
 import PaymentPage from './pages/PaymentPage.jsx'
 
+import PrivateRoute from './components/PrivateRoute.jsx'
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Routes>
@@ -32,21 +34,69 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/contactus' element={< ContactUs />} />
       <Route path='/signup' element={< SignUp />} />
       <Route path='/login' element={< Login />} />
-      <Route path="/rentcar/:id" element={<CarRentalForm />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/dealership" element={<DealershipApplicationPage />} />
-      <Route path="/verify/:token" element={<VerificationPage />} />
-      <Route path="/admin-dashboard" element={<AdminPage />} />
-      <Route path="/admin/dealerships" element={<DealershipApplicationsPage />} />
-      <Route path="/admin/users" element={<ManageUsersPage />} />
-      <Route path="/carbooking" element={<CarBooking />} />
-      <Route path="/dealership-dashboard/post" element={<DealershipDashboardPost />} />
-      <Route path="/dealership-dashboard/upload" element={<DealershipDashboardUpload />} />
-      <Route path="/payment" element={<PaymentPage />} />
-      <Route path="/dealership-dashboard" element={<DealershipDashboard />} />
-      
+      <Route path="/rentcar/:id" element={
+        <PrivateRoute>
+          <CarRentalForm />
+        </PrivateRoute>
+      } />
 
+      <Route path="/checkout" element={
+        <PrivateRoute>
+          <CheckoutPage />
+        </PrivateRoute>
+      } />
 
+      <Route path="/dealership" element={
+        <PrivateRoute><DealershipApplicationPage /></PrivateRoute>
+      } />
+
+      <Route path="/verify/:token" element={
+        <PrivateRoute>
+          <VerificationPage />
+        </PrivateRoute>
+      } />
+
+      <Route path="/admin-dashboard" element={
+        <PrivateRoute>
+          <AdminPage />
+        </PrivateRoute>
+      } />
+
+      <Route path="/admin/dealerships" element={
+        <PrivateRoute>
+          <DealershipApplicationsPage />
+        </PrivateRoute>
+      } />
+
+      <Route path="/admin/users" element={
+        <PrivateRoute>
+          <ManageUsersPage />
+        </PrivateRoute>
+      } />
+
+      <Route path="/carbooking" element={
+        <PrivateRoute>
+          <CarBooking />
+        </PrivateRoute>
+      } />
+
+      <Route path="/dealership-dashboard/post" element={
+        <PrivateRoute>
+          <DealershipDashboardPost />
+        </PrivateRoute>} />
+      <Route path="/dealership-dashboard/upload" element={
+        <PrivateRoute>
+          <DealershipDashboardUpload />
+        </PrivateRoute>} />
+      <Route path="/payment" element={
+        <PrivateRoute>
+          <PaymentPage />
+        </PrivateRoute>
+      } />
+      <Route path="/dealership-dashboard" element={
+        <PrivateRoute>
+          <DealershipDashboard />
+        </PrivateRoute>} />
 
       <Route path='*' element={< PageNotFound />} />
     </Routes>
