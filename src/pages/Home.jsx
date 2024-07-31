@@ -86,9 +86,7 @@ function Home() {
             <button className="bg-autoPurple font-medium text-autoCream p-2 rounded-lg">
               Learn More
             </button>
-            <button className="border-autoPurple border-2 font-medium text-autoPurple p-2 rounded-lg">
-              Sign Up
-            </button>
+           
           </div>
         </div>
 
