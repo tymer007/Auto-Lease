@@ -138,7 +138,6 @@ const CarRentalForm = () => {
                     onSuccess: function (response) { // Use onSuccess instead of callback
                         setIsLoading(false);
                         if (response.status === 'success') {
-                            setStep(3); // Move to the receipt download step
                             ({ message: 'Payment Successful', type: 'success' });
                             handleDownload(); // Generate and download the receipt
                         } else {
