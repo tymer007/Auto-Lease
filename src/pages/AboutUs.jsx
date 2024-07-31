@@ -2,6 +2,7 @@ import React from 'react'
 import Navbar from "../components/Navbar"
 import { Link } from 'react-router-dom';
 import Footer from "../components/Footer"
+import picture from "../assets/Frame430.png"
 
 function AboutUs() {
   return (
@@ -65,7 +66,7 @@ function AboutUs() {
         <section className="text-start mt-12">
                     <div className="relative bg-autoPurple text-white py-8 px-6 rounded-2xl mx-4 md:mx-8 overflow-hidden">
                     <img
-              src="src/assets/Frame430.png"
+              src={picture}
               alt="Background"
               className="absolute inset-0 w-full h-full object-cover"
             />
