@@ -132,20 +132,29 @@ const CarRentalForm = () => {
 
                 handler.newTransaction({
                     key: "pk_test_a36077fa842e2748bed420b96ae7c81b2c091b8c",
-                    email: userEmail || "test@example.com", // Use a default email for testing
-                    amount: 10000, // Set a small amount (e.g., ₦100) for testing
+                    email: userEmail,
+                    amount: Math.round(total) * 100, // Convert total to kobo by multiplying by 100 and rounding to the nearest integer
                     currency: 'NGN',
-                    onSuccess: function (response) {
-                        console.log('Payment Successful', response);
+                    onSuccess: function (response) { // Use onSuccess instead of callback
+                        setIsLoading(false);
+                        if (response.status === 'success') {
+                            setStep(3); // Move to the receipt download step
+                            ({ message: 'Payment Successful', type: 'success' });
+                            handleDownload(); // Generate and download the receipt
+                        } else {
+                            setAlert({ message: 'Payment Failed', type: 'error' });
+                        }
                     },
-                    onCancel: function () {
-                        console.log('Payment Cancelled');
+                    onCancel: function () { // Use onCancel instead of onClose
+                        setIsLoading(false);
+                        setAlert({ message: 'Payment Cancelled', type: 'info' });
                     }
                 });
                 
+                // Use open() instead of openIframe()
                 handler.open();
                 setIsLoading(false);
-                setAlert({ message: 'Booking Failed', type: 'error' });
+                setAlert({ message: 'Booking Submitting', type: 'success' });
             }
         } catch (error) {
             setIsLoading(false);
