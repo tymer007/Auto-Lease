@@ -2,6 +2,7 @@ import React from 'react'
 import Navbar from "../components/Navbar"
 import { Link } from 'react-router-dom';
 import Footer from "../components/Footer"
+import pictureCard from "../assets/AboutUsCard.png"
 import picture from "../assets/Frame430.png"
 
 function AboutUs() {
@@ -11,14 +12,11 @@ function AboutUs() {
 
       <header className="relative bg-gray-800 text-white">
         <img
-          src="Frame185.png"
+          src={pictureCard}
           alt="Car"
           className="w-full h-48 sm:h-64 md:h-96 lg:h-120 object-cover"
         />
-        <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-9xl text-center font-bold">
-            About <br /> Autolease
-          </h1>
+        <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-0">
         </div>
       </header>
 

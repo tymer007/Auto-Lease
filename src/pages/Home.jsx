@@ -75,7 +75,7 @@ function Home() {
             <input
               type="text"
               placeholder="Search"
-              className="border-2 border-autoPurple bg-autoCream p-2 rounded-xl px-4"
+              className="border-2 border-autoPurple bg-white p-2 rounded-xl px-4"
               onClick={handleSearchClick}
             />
             <button className="bg-autoPurple text-white p-2 px-8 rounded-xl">
