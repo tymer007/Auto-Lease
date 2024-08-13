@@ -23,6 +23,8 @@ import DealershipDashboardUpload from './pages/UploadPage.jsx'
 import DealershipDashboard from './pages/DealershipDashboard.jsx'
 import PaymentPage from './pages/PaymentPage.jsx'
 
+import Portfolio from './pages/Portfolio.jsx'
+
 import PrivateRoute from './components/PrivateRoute.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -34,6 +36,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/contactus' element={< ContactUs />} />
       <Route path='/signup' element={< SignUp />} />
       <Route path='/login' element={< Login />} />
+
+      <Route path='/portfolio' element={< Portfolio />} />
+
       <Route path="/rentcar/:id" element={
         <PrivateRoute>
           <CarRentalForm />
