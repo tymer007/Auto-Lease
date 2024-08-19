@@ -10,7 +10,7 @@ import AboutUs from './pages/AboutUs.jsx'
 import PageNotFound from './pages/PageNotFound.jsx'
 import SignUp from './pages/SignUp.jsx'
 import Login from './pages/Login.jsx'
-import CarRentalForm from './components/CarRentalForm.jsx'
+import CarRentalForm from './pages/CarRentalForm.jsx'
 import CarBooking from './pages/CarBooking.jsx'
 import CheckoutPage from './pages/CheckoutPage.jsx'
 import DealershipApplicationPage from './pages/DealershipApplication.jsx'
@@ -22,8 +22,6 @@ import DealershipDashboardPost from './pages/PostPage.jsx'
 import DealershipDashboardUpload from './pages/UploadPage.jsx'
 import DealershipDashboard from './pages/DealershipDashboard.jsx'
 import PaymentPage from './pages/PaymentPage.jsx'
-
-import Portfolio from './pages/Portfolio.jsx'
 
 import PrivateRoute from './components/PrivateRoute.jsx'
 
@@ -37,12 +35,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Route path='/signup' element={< SignUp />} />
       <Route path='/login' element={< Login />} />
 
-      <Route path='/portfolio' element={< Portfolio />} />
-
       <Route path="/rentcar/:id" element={
-        <PrivateRoute>
-          <CarRentalForm />
-        </PrivateRoute>
+        <CarRentalForm />
       } />
 
       <Route path="/checkout" element={
