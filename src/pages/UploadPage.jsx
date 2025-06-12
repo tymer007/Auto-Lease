@@ -99,7 +99,6 @@ const UploadPage = () => {
       return;
     }
 
-    const submitFormData = new FormData(e.target);
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.id;
 
@@ -109,8 +108,47 @@ const UploadPage = () => {
       return;
     }
 
-    // Add dealership ID to form data
+    // Create FormData manually to have better control
+    const submitFormData = new FormData();
+    
+    // Add all form fields
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== '') {
+        submitFormData.append(key, formData[key]);
+      }
+    });
+
+    // Add dealership ID
     submitFormData.append('dealership', userId);
+
+    // Add files
+    const form = e.target;
+    const coverImageFile = form.coverImage.files[0];
+    const photoFiles = form.photos.files;
+
+    if (coverImageFile) {
+      submitFormData.append('coverImage', coverImageFile);
+    }
+
+    if (photoFiles && photoFiles.length > 0) {
+      for (let i = 0; i < photoFiles.length; i++) {
+        submitFormData.append('photos', photoFiles[i]);
+      }
+    }
+
+    // Add some default values that might be required by the API
+    submitFormData.append('ratingsQuantity', '0');
+    submitFormData.append('ratingsAverage', '5');
+    submitFormData.append('isAvailable', 'true');
+    
+    // Add location if required (using a default location)
+    submitFormData.append('locations', JSON.stringify([{ "type": "Point", "coordinates": [3.3792, 6.5244] }]));
+
+    // Debug: Log form data contents
+    console.log('Form data contents:');
+    for (let [key, value] of submitFormData.entries()) {
+      console.log(key, value);
+    }
 
     try {
       const response = await axios.post(
@@ -119,7 +157,7 @@ const UploadPage = () => {
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
+            // Don't set Content-Type header - let axios set it automatically for FormData
           },
         }
       );
@@ -143,9 +181,17 @@ const UploadPage = () => {
       });
       setCoverImageName('');
       setPhotosCount(0);
+      
+      // Reset file inputs
+      form.reset();
     } catch (err) {
       console.error('Failed to upload vehicle:', err);
-      setAlert({ message: 'Failed to upload vehicle. Please try again.', type: 'error' });
+      console.error('Error response:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      setAlert({ 
+        message: `Failed to upload vehicle: ${err.response?.data || err.message}`, 
+        type: 'error' 
+      });
       setIsSubmitting(false);
     }
   };
@@ -202,7 +248,7 @@ const UploadPage = () => {
 
           {alert.message && <CustomAlert message={alert.message} type={alert.type} />}
 
-          <form onSubmit={handleSubmit} className="space-y-6 py-2">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <Input 
               label="Vehicle Name" 
               name="name" 
