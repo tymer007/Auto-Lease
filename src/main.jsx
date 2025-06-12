@@ -64,10 +64,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
       <Route
         path="/verify/:token"
-        element={
-          <PrivateRoute>
-            <VerificationPage />
-          </PrivateRoute>
+        element={<VerificationPage />
         }
       />
 
