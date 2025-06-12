@@ -22,6 +22,8 @@ const CarRentalForm = () => {
   const [paymentReference, setPaymentReference] = useState(null);
   const navigate = useNavigate();
 
+  console.log("car:", car);
+
   const receiptRef = useRef(null);
 
   const today = new Date();
@@ -114,7 +116,7 @@ const CarRentalForm = () => {
     email,
     amount,
     publicKey,
-    text: `Checkout ₦ ${total.toFixed(2)}`,
+    text: `Checkout ₦${total.toFixed(2)}`,
     metadata: {
       name: userData?.name,
       email: userData?.email,
@@ -133,8 +135,8 @@ const CarRentalForm = () => {
       ),
       discount: car?.discount,
       deliveryFee: car?.fee,
-      subTotal: Number(subTotal).toFixed(2),
-      total: Number(total).toFixed(2),
+      subTotal,
+      total,
     },
     onSuccess: (reference) => {
       console.log("Payment successful", reference);
@@ -192,11 +194,19 @@ const CarRentalForm = () => {
                   className="w-full h-48 object-cover rounded"
                 />
               </div>
+              {/* <div className="flex justify-center p-4 rounded-xl shadow-2xl border-2 z-10">
+                <img
+                  src={car.photos[0].url}
+                  alt={car.name}
+                  className="w-full h-48 object-cover rounded"
+                />
+              </div> */}
               <div className="px-4 pb-4">
                 <p className="text-gray-700 mt-4 text-center pt-2">
                   <strong>Dealership:</strong> {car.dealership}
                 </p>
-                <p className="text-gray-700 mb-4 text-center">{car.model}</p>
+                <p className="text-gray-700 text-center"><span className="font-semibold">{car.name}&nbsp;</span>{car.model}</p>
+                <p className="text-gray-700 mb-4 text-center text-sm">{car.summary}</p>
                 <div className="space-y-4">
                   <form className="space-y-4">
                     <label className="block">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate,Link } from "react-router-dom"; // Import useNavigate
+import { useNavigate, Link } from "react-router-dom"; // Import useNavigate
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import VerificationPrompt from "../components/VerificationPrompt";
@@ -86,7 +86,6 @@ function Home() {
             <button className="bg-autoPurple font-medium text-autoCream p-2 rounded-lg">
               Learn More
             </button>
-           
           </div>
         </div>
 
@@ -144,9 +143,9 @@ function Home() {
               key={car._id}
               className="bg-white p-4 rounded-3xl shadow-md max-w-96"
             >
-              <p className="text-gray-700 text-start border-gray-700 rounded-xl border-2 max-w-fit p-2">
+              <span className="text-base text-gray-500 border p-2 rounded-lg">
                 {car.category}
-              </p>
+              </span>
               <h3 className="text-2xl font-bold text-center text-gray-600">
                 {car.name}
               </h3>
@@ -156,12 +155,17 @@ function Home() {
                 className="w-full object-cover rounded-xl py-2"
               />
               <div className="flex justify-between pt-2">
-                <p className="text-autoPurple font-medium place-self-center">
-                  ₦{car.price}
-                </p>
+                <div>
+                  <p className="text-autoPurple place-self-center font-semibold">
+                    ₦ {car.price.toLocaleString()}
+                  </p>
+                  <p className="text-autoPurple font-medium place-self-center text-xs">
+                    Rent Per Day
+                  </p>
+                </div>
                 <button
                   onClick={() => handleCarClick(car)}
-                  className="bg-autoPurple text-white p-2 rounded-3xl place-self-center px-4 "
+                  className="bg-autoPurple text-white p-2 rounded-3xl place-self-center px-4 font-semibold"
                 >
                   Rent
                 </button>
