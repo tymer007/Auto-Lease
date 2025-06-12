@@ -51,8 +51,8 @@ const Login = () => {
         }
       }
     } catch (error) {
-      console.error("There was an error logging in!", error);
-      setAlert({ message: "There was an error logging in!", type: "error" });
+      // console.error("There was an error logging in!", error);
+      setAlert({ message: "Email or password incorrect", type: "error" });
     } finally {
       setIsLoading(false);
     }

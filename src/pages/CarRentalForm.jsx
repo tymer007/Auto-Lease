@@ -114,7 +114,28 @@ const CarRentalForm = () => {
     email,
     amount,
     publicKey,
-    text: `Checkout ₦${total.toFixed(2)}`,
+    text: `Checkout ₦ ${total.toFixed(2)}`,
+    metadata: {
+      name: userData?.name,
+      email: userData?.email,
+      address,
+      carName: car?.name,
+      carModel: car?.model,
+      dealership: car?.dealership,
+      category: car?.category,
+      pickupDate,
+      pickupTime,
+      dropoffDate,
+      dropoffTime,
+      pricePerDay: car?.price,
+      days: Math.ceil(
+        (new Date(dropoffDate) - new Date(pickupDate)) / (1000 * 60 * 60 * 24)
+      ),
+      discount: car?.discount,
+      deliveryFee: car?.fee,
+      subTotal: Number(subTotal).toFixed(2),
+      total: Number(total).toFixed(2),
+    },
     onSuccess: (reference) => {
       console.log("Payment successful", reference);
       handlePaymentSuccess(reference);
@@ -170,7 +191,6 @@ const CarRentalForm = () => {
                   alt={car.name}
                   className="w-full h-48 object-cover rounded"
                 />
-                {/* <img src={car.coverImage.url} alt={car.name} className="w-full h-48 object-cover rounded" /> */}
               </div>
               <div className="px-4 pb-4">
                 <p className="text-gray-700 mt-4 text-center pt-2">
@@ -229,18 +249,19 @@ const CarRentalForm = () => {
                         className="border rounded px-2 py-1 w-full"
                         type="text"
                         value={address}
-                        placeholder="Address"
+                        placeholder="Delivery address e.g. Abuja Park"
                         onChange={(e) => setAddress(e.target.value)}
                       />
                     </label>
                   </form>
                 </div>
                 <div className="flex items-center justify-between mt-6 gap-1">
-                  <span className="w-fit text-xs p-0.5 text-white text-center bg-gray-800 rounded">
-                    Rental Fee
+                  <span className="w-3/12 text-xs p-0.5 text-white text-center bg-gray-800 rounded">
+                    Rental Fee <br />
+                    Per Day
                   </span>
-                  <span className="text-xl py-1 font-bold border w-full text-center border-gray-800 rounded">
-                    ₦ {car.price}
+                  <span className="text-xl py-1 font-bold border w-9/12 text-center border-gray-800 rounded">
+                    ₦ {car.price.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-1 pt-2">
@@ -267,9 +288,9 @@ const CarRentalForm = () => {
           <div className="max-w-sm mx-auto bg-white rounded-lg overflow-hidden md:max-w-md mt-8">
             <h1 className="text-2xl text-center font-bold">Invoice</h1>
             <div className="w-12/12 shadow-2xl px-2 rounded-lg p-3">
-              <img src={invoice} alt="" className="" />
+              <img src={invoice} alt="" />
               <div className="flex justify-between text-gray-500">
-                <div>Ikon Allah Invoice</div>
+                <div>AUTOLEASE Invoice</div>
                 <div>Date: {dateToday}</div>
               </div>
               <div className="flex justify-between px-1">
@@ -292,7 +313,7 @@ const CarRentalForm = () => {
               <div className="flex justify-between px-1">
                 <div>Price Per Day x Number of Days</div>
                 <div>
-                  ₦ {car.price} x{" "}
+                  ₦ {Number(car.price).toLocaleString()} x{" "}
                   {Math.ceil(
                     (new Date(dropoffDate) - new Date(pickupDate)) /
                       (1000 * 60 * 60 * 24)
@@ -307,25 +328,33 @@ const CarRentalForm = () => {
                       car.discount > 0 ? "text-gray-700 line-through" : ""
                     }`}
                   >
-                    ₦ {subTotal}
+                    ₦{" "}
+                    {Number(subTotal).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                 </div>
               </div>
               {car.discount > 0 && (
-                <>
-                  <div className="flex justify-between px-1">
-                    <div>Applied Discount</div>
-                    <div>- {car.discount}%</div>
-                  </div>
-                </>
+                <div className="flex justify-between px-1">
+                  <div>Applied Discount</div>
+                  <div>- {car.discount}%</div>
+                </div>
               )}
               <div className="flex justify-between px-1">
                 <div>Delivery fee</div>
-                <div>+ ₦{car.fee}</div>
+                <div>+ ₦ {Number(car.fee).toLocaleString()}</div>
               </div>
-              <div className="flex justify-between px-1">
+              <div className="flex justify-between px-1 font-bold text-black">
                 <div>Total</div>
-                <div>₦{total.toFixed(2)}</div>
+                <div>
+                  ₦&nbsp;
+                  {Number(total).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </div>
               </div>
             </div>
             <div className="flex items-center justify-between gap-1 pt-4">
@@ -348,95 +377,139 @@ const CarRentalForm = () => {
             <h1 className="text-2xl font-bold mb-4 text-center text-slate-700">
               Payment Successful!
             </h1>
-            {/* div below to image */}
             <div
               ref={receiptRef}
-              className="w-11/12 shadow-2xl px-2 rounded-lg p-3 bg-white"
+              className="w-11/12 shadow-2xl px-4 rounded-lg p-4 bg-white text-sm text-gray-800"
             >
-              <img src={invoice} alt="picture" className="" />
-              <div className="flex justify-between text-gray-500">
-                <div>Ikon-Allah Reciept</div>
-                <div>Date: {dateToday}</div>
+              <img src={invoice} alt="Receipt header" className="mb-2" />
+              <div className="text-center font-bold text-xl mb-2">
+                AUTOLEASE RECEIPT
               </div>
-              <div className="flex justify-between pt-2 px-1">
-                <div>Name</div>
-                <div>{userData.name}</div>
+              <div className="flex justify-between text-gray-500 text-sm mb-2">
+                <span>Date</span>
+                <span>{dateToday}</span>
               </div>
-              <div className="flex justify-between px-1">
-                <div>Email</div>
-                <div>{userData.email}</div>
-              </div>
-              <div className="flex justify-between px-1">
-                <div>Address</div>
-                <div>{address}</div>
-              </div>
-              {/* <div className="flex justify-between px-1">
-              <div>Order No.</div>
-              <div>From id of boooking</div>
-            </div> */}
-              <div className="flex justify-between px-1">
-                <div>Payment Reference</div>
-                <div>{paymentReference}</div>
-              </div>
-              <hr className="my-2 border-slate-900 mx-1" />
-              <div className="flex justify-between px-1">
-                <div>Car Name</div>
-                <div>{car.name}</div>
-              </div>
-              <div className="flex justify-between px-1">
-                <div>Car Model</div>
-                <div>{car.model}</div>
-              </div>
-              <div className="flex justify-between px-1">
-                <div>Pick-Up Date</div>
-                <div>{pickupDate}</div>
-              </div>
-              <div className="flex justify-between px-1">
-                <div>Drop Off Date</div>
-                <div>{dropoffDate}</div>
-              </div>
-              <hr className="my-3 border-slate-900 mx-1" />
-              <div className="flex justify-between px-1">
-                <div>Price Per Day x Number of Days</div>
-                <div>
-                  ₦ {car.price} x{" "}
-                  {Math.ceil(
-                    (new Date(dropoffDate) - new Date(pickupDate)) /
-                      (1000 * 60 * 60 * 24)
-                  )}
+
+              <div className="border-t pt-2">
+                <div className="flex justify-between mb-1">
+                  <span>Reference</span>
+                  <span>{paymentReference}</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Name</span>
+                  <span>{userData?.name}</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Email</span>
+                  <span>{userData?.email}</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Address</span>
+                  <span>{address}</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Car</span>
+                  <span>
+                    {car.name} ({car.model})
+                  </span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Category</span>
+                  <span>{car.category}</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Dealership</span>
+                  <span>{car.dealership}</span>
                 </div>
               </div>
-              <div className="flex justify-between px-1">
-                <div>Subtotal</div>
-                <div>
-                  <span
-                    className={`${
-                      car.discount > 0 ? "text-gray-700 line-through" : ""
-                    }`}
-                  >
-                    ₦ {subTotal}
+
+              <div className="border-t pt-2 mt-2">
+                <div className="flex justify-between mb-1">
+                  <span>To be Delivered</span>
+                  <span>
+                    {pickupDate} at {pickupTime}
+                  </span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>To be returned</span>
+                  <span>
+                    {dropoffDate} at {dropoffTime}
+                  </span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Days</span>
+                  <span>
+                    {Math.ceil(
+                      (new Date(dropoffDate) - new Date(pickupDate)) /
+                        (1000 * 60 * 60 * 24)
+                    )}{" "}
+                    day(s)
                   </span>
                 </div>
               </div>
-              <div className="flex justify-between px-1">
-                <div>Applied Discount</div>
-                <div>- {car.discount}%</div>
-              </div>
-              <div className="flex justify-between px-1">
-                <div>Delivery fee</div>
-                <div>+ ₦ {car.fee}</div>
-              </div>
-              <div className="flex justify-between px-1">
-                <div>Total Paid</div>
-                <div>₦{total.toFixed(2)}</div>
+
+              <div className="border-t pt-2 mt-2 font-semibold">
+                <div className="flex justify-between mb-1">
+                  <span>Price Per Day</span>
+                  <span>₦ {Number(car.price).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span>Subtotal</span>
+                  <span
+                    className={
+                      car.discount > 0 ? "line-through text-gray-500" : ""
+                    }
+                  >
+                    ₦&nbsp;
+                    {Number(subTotal).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
+                {car.discount > 0 && (
+                  <div className="flex justify-between mb-1 text-indigo-500">
+                    <span>Discount ({car.discount}%)</span>
+                    <span>
+                      - ₦&nbsp;
+                      {Number(
+                        ((subTotal * car.discount) / 100).toFixed(2)
+                      ).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between mb-1">
+                  <span>Delivery Fee</span>
+                  <span>₦ {Number(car.fee).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between mb-1 text-xl text-black">
+                  <span>Total</span>
+                  <span>
+                    ₦&nbsp;
+                    {Number(total).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
               </div>
             </div>
+
             <button
               className="mt-4 bg-autoPurple font-extrabold text-white py-2 px-4 rounded"
               onClick={handleDownloadImage}
             >
-              Download Receipt as PNG
+              <p>Download Receipt</p>
             </button>
+            <span className="text-sm font-medium text-center pt-2">
+              Your car will be delivered to your address on pick up date.
+            </span>
+            <span className="text-sm font-medium text-center">
+              Show your receipt to our Valet to claim rental car
+            </span>
+            <span className="text-sm font-medium text-center">
+              Thanks for choosing us! 💜
+            </span>
           </div>
         )}
       </div>

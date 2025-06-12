@@ -4,7 +4,9 @@ import CustomAlert from "../components/customAlerts";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
-import FileUpload from "../components/FileUpload"; // Import your FileUpload component
+import FileUpload from "../components/FileUpload";
+import invoice from "../assets/invoice.svg";
+import { Eye, EyeOff, Car, Upload, CheckCircle } from "lucide-react";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -16,11 +18,13 @@ const SignUp = () => {
     hasEightChars: false,
     hasUpperCase: false,
     hasSpecialChar: false,
-    coverImage: null, // Add coverImage field
-    licenseFront: null, // Add licenseFront field
-    licenseBack: null, // Add licenseBack field
+    coverImage: null,
+    licenseFront: null,
+    licenseBack: null,
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState({ message: "", type: "" });
   const navigate = useNavigate();
@@ -46,7 +50,9 @@ const SignUp = () => {
 
         newFormData.hasEightChars = newFormData.password.length >= 8;
         newFormData.hasUpperCase = /[A-Z]/.test(newFormData.password);
-        newFormData.hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(newFormData.password);
+        newFormData.hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(
+          newFormData.password
+        );
 
         return newFormData;
       });
@@ -58,17 +64,51 @@ const SignUp = () => {
     }
   };
 
+  const handleFileChange = (name, file) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: file,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Perform field validation
-    if (formData.password !== formData.passwordConfirm) {
-      setAlert({ message: "Passwords do not match!", type: "error" });
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.passwordConfirm
+    ) {
+      setAlert({
+        message: "Please fill out all required fields",
+        type: "error",
+      });
       return;
     }
 
-    if (!formData.hasEightChars || !formData.hasUpperCase || !formData.hasSpecialChar) {
-      setAlert({ message: "Password does not meet all criteria!", type: "error" });
+    if (formData.password !== formData.passwordConfirm) {
+      setAlert({ message: "Passwords do not match", type: "error" });
+      return;
+    }
+
+    if (
+      !formData.hasEightChars ||
+      !formData.hasUpperCase ||
+      !formData.hasSpecialChar
+    ) {
+      setAlert({
+        message: "Password does not meet all criteria",
+        type: "error",
+      });
+      return;
+    }
+
+    if (!formData.terms) {
+      setAlert({
+        message: "Please accept terms and conditions",
+        type: "error",
+      });
       return;
     }
 
@@ -79,9 +119,16 @@ const SignUp = () => {
     data.append("password", formData.password);
     data.append("passwordConfirm", formData.passwordConfirm);
     data.append("terms", formData.terms);
-    data.append("coverImage", formData.coverImage);
-    data.append("licenseFront", formData.licenseFront);
-    data.append("licenseBack", formData.licenseBack);
+
+    // if (formData.coverImage) {
+    //   data.append("coverImage", formData.coverImage);
+    // }
+    // if (formData.licenseFront) {
+    //   data.append("licenseFront", formData.licenseFront);
+    // }
+    // if (formData.licenseBack) {
+    //   data.append("licenseBack", formData.licenseBack);
+    // }
 
     setIsLoading(true);
     try {
@@ -105,9 +152,33 @@ const SignUp = () => {
       navigate("/");
     } catch (error) {
       console.error("There was an error submitting the form!", error);
-      setAlert({ message: "There was an error submitting the form!", type: "error" });
+
+      // Handle specific error cases
+      if (error.response && error.response.status === 500) {
+        const errorMessage = error.response.data?.message || "";
+        if (
+          errorMessage.includes("E11000 duplicate key error") &&
+          errorMessage.includes("email")
+        ) {
+          setAlert({
+            message:
+              "Email already exists, try logging in or entering a new email address",
+            type: "error",
+          });
+        } else {
+          setAlert({
+            message: "There was an error submitting the form!",
+            type: "error",
+          });
+        }
+      } else {
+        setAlert({
+          message: "There was an error submitting the form!",
+          type: "error",
+        });
+      }
     } finally {
-      setIsLoading(false); // Set loading to false after submission is complete
+      setIsLoading(false);
     }
   };
 
@@ -123,45 +194,12 @@ const SignUp = () => {
       <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
       <div className="absolute inset-0 bg-slate-900 opacity-50 z-0"></div>
       <div className="bg-white p-8 rounded-lg shadow-md w-96 relative z-10">
-      <div className="flex justify-center items-center h-44">
-        <svg
-            width="908"
-            height="474"
-            viewBox="0 0 908 474"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M0 34C0 15.2223 15.2223 0 34 0H727C745.778 0 761 15.2223 761 34V99C761 117.778 776.222 133 795 133H874C892.778 133 908 148.222 908 167V440C908 458.778 892.778 474 874 474H215C196.222 474 181 458.778 181 440V405C181 386.222 165.778 371 147 371H34C15.2223 371 0 355.778 0 337V34Z"
-              fill="#36454F"
-            />
-            <path
-              d="M254.83 260L274.08 225.35L278.49 233.4L263.72 260H254.83ZM285.14 221.36L306.49 260H297.67L280.66 229.34L276.25 221.36L280.66 213.38L285.14 221.36ZM338.431 213.52H345.081V243.13C345.081 246.63 343.821 250.06 341.441 252.58C340.531 253.63 339.481 254.54 338.431 255.31C334.511 258.32 329.681 260 324.361 260C319.111 260 314.281 258.25 310.361 255.31C309.241 254.47 308.261 253.56 307.281 252.58C304.901 249.99 303.641 246.56 303.641 243.06V213.52H310.361V239.21C310.361 246.77 316.311 253.07 323.871 253.35C324.081 253.35 324.221 253.35 324.361 253.35C324.571 253.35 324.711 253.35 324.851 253.35C332.481 253.07 338.431 246.77 338.431 239.21V213.52ZM371.364 260H364.644V223.6H371.364V260ZM389.144 220.24H347.634V213.52H389.144V220.24ZM410.289 220.17C401.119 220.17 393.699 227.66 393.699 236.76C393.699 245.93 401.119 253.35 410.289 253.35C419.389 253.35 426.809 245.93 426.809 236.76C426.809 227.66 419.389 220.17 410.289 220.17ZM386.979 236.76C386.979 223.88 397.409 213.52 410.289 213.52C423.099 213.52 433.529 223.88 433.529 236.76C433.529 249.64 423.099 260 410.289 260C397.409 260 386.979 249.64 386.979 236.76ZM442.683 253.35H472.153V260H435.963V213.17H442.683V253.35ZM482.114 238.44V253.35H516.554V260H475.394V223.6H482.114V231.72H512.004V238.44H482.114ZM475.394 213.52H516.554V220.24H475.394V213.52ZM519.064 260L538.314 225.35L542.724 233.4L527.954 260H519.064ZM549.374 221.36L570.724 260H561.904L544.894 229.34L540.484 221.36L544.894 213.38L549.374 221.36ZM597.237 233.4C602.207 233.4 606.547 236.13 608.857 240.12C609.907 242.08 610.607 244.32 610.607 246.7C610.607 249.15 609.907 251.39 608.857 253.35C606.547 257.34 602.207 260 597.237 260H582.817C577.847 260 573.507 257.34 571.197 253.35C570.147 251.46 569.517 249.36 569.447 247.05H576.167C576.377 250.55 579.247 253.35 582.817 253.35H597.237C600.877 253.35 603.887 250.34 603.887 246.7C603.887 243.06 600.877 240.12 597.237 240.12H582.747C579.037 240.12 575.607 238.58 573.227 236.06C572.457 235.29 571.757 234.38 571.197 233.4C570.077 231.51 569.447 229.2 569.447 226.82C569.447 224.44 570.077 222.2 571.197 220.24C573.507 216.25 577.847 213.52 582.747 213.52H596.887C597.027 213.52 597.167 213.52 597.237 213.52C597.377 213.52 597.447 213.52 597.587 213.52C602.417 213.66 606.547 216.32 608.787 220.24C608.857 220.24 608.857 220.24 608.857 220.24C609.907 222.06 610.537 224.23 610.607 226.47H603.887C603.677 223.04 600.947 220.38 597.517 220.24H582.747C579.107 220.24 576.167 223.18 576.167 226.82C576.167 230.25 578.757 233.05 582.117 233.4C582.327 233.4 582.537 233.4 582.817 233.4C583.167 233.4 583.587 233.4 583.937 233.4H597.237ZM620.52 238.44V253.35H654.96V260H613.8V223.6H620.52V231.72H650.41V238.44H620.52ZM613.8 213.52H654.96V220.24H613.8V213.52Z"
-              fill="white"
-            />
-            <rect
-              y="378"
-              width="173"
-              height="93"
-              rx="34"
-              fill="#36454F"
-              fillOpacity="0.5"
-            />
-            <rect
-              x="768"
-              width="140"
-              height="126"
-              rx="34"
-              fill="#36454F"
-              fillOpacity="0.5"
-            />
-          </svg>
+        <div className="flex justify-center items-center pb-6">
+          <img src={invoice} alt="" className="w-full" />
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <Input
-            label="Full Name"
+            label="Full Name *"
             type="text"
             id="name"
             placeholder="Full Name"
@@ -170,41 +208,134 @@ const SignUp = () => {
             onChange={handleChange}
           />
           <Input
-            label="Email"
+            label="Email *"
             type="email"
             id="email"
             placeholder="Email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-          /> {/* Add file upload components here */}
-          <FileUpload
-            label="Front of Driver's License"
-            name="frontOfId"
-            onChange={handleChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md"
           />
-          {formData.licenseFront && (
-            <p className="text-green-500 text-sm">Front of Driver's License uploaded.</p>
-          )}
-          <FileUpload
-            label="Back of Driver's License"
-            name="backOfId"
-            onChange={handleChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
-          {formData.licenseBack && (
-            <p className="text-green-500 text-sm">Back of Driver's License uploaded.</p>
-          )}
-          <Input
-            label="Password"
-            type="password"
-            id="password"
-            placeholder="Password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
+
+          {/* File upload components */}
+          <div>
+            <div className="relative">
+              <div className="font-semibold text-base">
+                Front of Driver's License
+              </div>
+              <input
+                type="file"
+                name="licenseFront"
+                accept="image/*"
+                onChange={(e) =>
+                  handleFileChange("licenseFront", e.target.files[0])
+                }
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                id="licenseFront"
+              />
+              <label
+                htmlFor="licenseFront"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                  <p className="mb-1 text-sm text-gray-500 font-medium text-center">
+                    Upload a clear image of the <br /> front of your driver's
+                    license
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Under 5MB, Accepted Formats: .jpg, .jpeg, .png
+                  </p>
+                </div>
+              </label>
+            </div>
+            {formData.licenseFront && (
+              <div className="mt-2">
+                {formData.licenseFront.type.startsWith("image/") && (
+                  <img
+                    src={URL.createObjectURL(formData.licenseFront)}
+                    alt="License Front Preview"
+                    className="mt-2 w-full max-h-fit object-cover rounded border"
+                  />
+                )}
+                <p className="text-indigo-600 text-sm text-center pt-1">
+                  Front of Driver's License uploaded.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className="relative">
+              <div className="font-semibold text-base pt-2">
+                Back of Driver's License
+              </div>
+              <input
+                type="file"
+                name="licenseBack"
+                accept="image/*"
+                onChange={(e) =>
+                  handleFileChange("licenseBack", e.target.files[0])
+                }
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                id="licenseBack"
+              />
+              <label
+                htmlFor="licenseBack"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                  <p className="mb-1 text-sm text-gray-500 font-medium text-center">
+                    Upload a clear image of the <br /> back of your driver's
+                    license
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Under 5MB, Accepted Formats: .jpg, .jpeg, .png
+                  </p>
+                </div>
+              </label>
+            </div>
+            {formData.licenseBack && (
+              <div className="mt-2">
+                {formData.licenseBack.type.startsWith("image/") && (
+                  <img
+                    src={URL.createObjectURL(formData.licenseBack)}
+                    alt="License Back Preview"
+                    className="mt-2 w-full max-h-fit object-cover rounded border"
+                  />
+                )}
+                <p className="text-indigo-600 text-sm text-center pt-1">
+                  Back of Driver's License uploaded.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="text-xs text-gray-500 text-center">
+            Your images will be verified for authenticity
+          </div>
+
+          {/* Password field with eye toggle */}
+          <div className="relative">
+            <Input
+              label="Password *"
+              type={showPassword ? "text" : "password"}
+              id="password"
+              placeholder="Password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <button
+              type="button"
+              className="absolute right-3 bottom-3 text-gray-500 hover:text-gray-700"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
           <div className="space-y-2">
             <div className="flex items-center">
               <input
@@ -215,7 +346,10 @@ const SignUp = () => {
                 readOnly
                 className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
               />
-              <label htmlFor="hasEightChars" className="ml-2 block text-sm text-gray-700">
+              <label
+                htmlFor="hasEightChars"
+                className="ml-2 block text-sm text-gray-700"
+              >
                 8 Characters
               </label>
             </div>
@@ -228,7 +362,10 @@ const SignUp = () => {
                 readOnly
                 className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
               />
-              <label htmlFor="hasUpperCase" className="ml-2 block text-sm text-gray-700">
+              <label
+                htmlFor="hasUpperCase"
+                className="ml-2 block text-sm text-gray-700"
+              >
                 1 upper case character
               </label>
             </div>
@@ -241,20 +378,35 @@ const SignUp = () => {
                 readOnly
                 className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
               />
-              <label htmlFor="hasSpecialChar" className="ml-2 block text-sm text-gray-700">
+              <label
+                htmlFor="hasSpecialChar"
+                className="ml-2 block text-sm text-gray-700"
+              >
                 1 special character
               </label>
             </div>
           </div>
-          <Input
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm Password"
-            name="passwordConfirm"
-            value={formData.passwordConfirm}
-            onChange={handleChange}
-          />
+
+          {/* Confirm Password field with eye toggle */}
+          <div className="relative">
+            <Input
+              label="Confirm Password *"
+              type={showConfirmPassword ? "text" : "password"}
+              id="confirmPassword"
+              placeholder="Confirm Password"
+              name="passwordConfirm"
+              value={formData.passwordConfirm}
+              onChange={handleChange}
+            />
+            <button
+              type="button"
+              className="absolute right-3 bottom-3 text-gray-500 hover:text-gray-700"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -264,7 +416,6 @@ const SignUp = () => {
               onChange={handleChange}
               className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
             />
-            
             <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
               I have read and understood and agree to the{" "}
               <a href="#" className="text-indigo-600 hover:text-indigo-500">
@@ -276,8 +427,6 @@ const SignUp = () => {
               </a>
             </label>
           </div>
-
-         
 
           <button
             type="submit"
