@@ -7,6 +7,8 @@ import littleCard from '../assets/littlecard.svg';
 import TabNavigation from '../components/TabNav';
 import CustomAlert from '../components/customAlerts';
 import Footer from '../components/Footer';
+import Input from "../components/Input";
+import FileUpload from "../components/FileUpload";
 
 const UploadPage = () => {
   const [profile, setProfile] = useState({
@@ -14,6 +16,20 @@ const UploadPage = () => {
     description: '',
     coverImage: '',
     summary: '',
+  });
+  const [formData, setFormData] = useState({
+    name: '',
+    model: '',
+    price: '',
+    summary: '',
+    category: 'basic',
+    vin: '',
+    imei: '',
+    plateNumber: '',
+    description: '',
+    fee: '',
+    discount: '',
+    duration: '',
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -64,6 +80,14 @@ const UploadPage = () => {
     fetchProfileData();
   }, []);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -75,7 +99,7 @@ const UploadPage = () => {
       return;
     }
 
-    const formData = new FormData(e.target);
+    const submitFormData = new FormData(e.target);
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.id;
 
@@ -85,10 +109,13 @@ const UploadPage = () => {
       return;
     }
 
+    // Add dealership ID to form data
+    submitFormData.append('dealership', userId);
+
     try {
       const response = await axios.post(
         `https://auto-lease-backend.onrender.com/api/v1/dealerships/${userId}/cars/`,
-        formData,
+        submitFormData,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -98,6 +125,24 @@ const UploadPage = () => {
       );
       setAlert({ message: 'Vehicle uploaded successfully.', type: 'success' });
       setIsSubmitting(false);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        model: '',
+        price: '',
+        summary: '',
+        category: 'basic',
+        vin: '',
+        imei: '',
+        plateNumber: '',
+        description: '',
+        fee: '',
+        discount: '',
+        duration: '',
+      });
+      setCoverImageName('');
+      setPhotosCount(0);
     } catch (err) {
       console.error('Failed to upload vehicle:', err);
       setAlert({ message: 'Failed to upload vehicle. Please try again.', type: 'error' });
@@ -157,64 +202,168 @@ const UploadPage = () => {
 
           {alert.message && <CustomAlert message={alert.message} type={alert.type} />}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FormInput label="Vehicle Name" name="name" type="text" />
-            <FormInput label="Vehicle Model" name="model" type="text" />
-            <FormInput label="Price" name="price" type="text" />
-            <FormInput label="Summary" name="summary" type="text" />
+          <form onSubmit={handleSubmit} className="space-y-6 py-2">
+            <Input 
+              label="Vehicle Name" 
+              name="name" 
+              type="text" 
+              id="name"
+              placeholder="Enter vehicle name"
+              value={formData.name}
+              onChange={handleInputChange}
+            />
 
-            <div>
-              <label htmlFor="category" className="block text-sm font-medium mb-1">Category</label>
-              <select name="category" id="category" className="w-full border-2 border-gray-300 rounded-md p-2 shadow-sm" required>
+            <Input 
+              label="Vehicle Model" 
+              name="model" 
+              type="text" 
+              id="model"
+              placeholder="Enter vehicle model"
+              value={formData.model}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="Price Per Day" 
+              name="price" 
+              type="number" 
+              id="price"
+              placeholder="Enter price per day"
+              value={formData.price}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="VIN Number" 
+              name="vin" 
+              type="text" 
+              id="vin"
+              placeholder="Enter VIN number"
+              value={formData.vin}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="IMEI Number" 
+              name="imei" 
+              type="text" 
+              id="imei"
+              placeholder="Enter IMEI number"
+              value={formData.imei}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="Plate Number" 
+              name="plateNumber" 
+              type="text" 
+              id="plateNumber"
+              placeholder="Enter plate number"
+              value={formData.plateNumber}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="Summary" 
+              name="summary" 
+              type="text" 
+              id="summary"
+              placeholder="Brief vehicle summary"
+              value={formData.summary}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="Description" 
+              name="description" 
+              type="text" 
+              id="description"
+              placeholder="Detailed vehicle description"
+              value={formData.description}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="Fee" 
+              name="fee" 
+              type="number" 
+              id="fee"
+              placeholder="Enter additional fee"
+              value={formData.fee}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="Discount (%)" 
+              name="discount" 
+              type="number" 
+              id="discount"
+              placeholder="Enter discount percentage"
+              value={formData.discount}
+              onChange={handleInputChange}
+            />
+
+            <Input 
+              label="Duration (End Date)" 
+              name="duration" 
+              type="datetime-local" 
+              id="duration"
+              placeholder="Select end date"
+              value={formData.duration}
+              onChange={handleInputChange}
+            />
+
+            <div className="flex flex-col w-full gap-2">
+              <div className="flex justify-between">
+                <label htmlFor="category" className="font-semibold capitalize">Category</label>
+              </div>
+              <select 
+                name="category" 
+                id="category" 
+                value={formData.category}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              >
                 <option value="basic">Basic</option>
                 <option value="luxury">Luxury</option>
                 <option value="classic">Classic</option>
               </select>
             </div>
 
-            <div>
-              <label htmlFor="cover-image" className="block text-sm font-medium mb-1">Upload Cover Image</label>
-              <div className="border-2 border-gray-300 rounded-md p-8 text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                <input type="file" accept="image/*" id="cover-image" name="coverImage" required className="sr-only" onChange={handleCoverImageChange} />
-                <label htmlFor="cover-image" className="mt-2 inline-block text-sm font-medium text-gray-700 cursor-pointer">Choose File</label>
-                {coverImageName && <p className="mt-2 text-sm text-gray-500">{coverImageName}</p>}
-              </div>
-            </div>
+            <FileUpload
+              label="Upload Cover Image"
+              name="coverImage"
+              onChange={handleCoverImageChange}
+              multiple={false}
+            />
+            {coverImageName && (
+              <p className="text-sm text-gray-600 mt-2">Selected: {coverImageName}</p>
+            )}
+
+            <FileUpload
+              label="Upload Photos"
+              name="photos"
+              onChange={handlePhotosChange}
+              multiple={true}
+            />
+            {photosCount > 0 && (
+              <p className="text-sm text-gray-600 mt-2">{photosCount} photos selected</p>
+            )}
 
             <div>
-              <label htmlFor="photos" className="block text-sm font-medium mb-1">Upload Photos</label>
-              <div className="border-2 border-gray-300 rounded-md p-8 text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                <input type="file" accept="image/*" id="photos" name="photos" multiple required className="sr-only" onChange={handlePhotosChange} />
-                <label htmlFor="photos" className="mt-2 inline-block text-sm font-medium text-gray-700 cursor-pointer">Choose Files</label>
-                {photosCount > 0 && <p className="mt-2 text-sm text-gray-500">{photosCount} photos selected</p>}
-              </div>
-            </div>
-
-            <div>
-              <button type="submit" className="w-full bg-purple-700 text-white py-3 rounded-md text-lg font-semibold flex justify-center items-center">
+              <button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full bg-purple-700 text-white py-3 rounded-md text-lg font-semibold flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-800 transition-colors"
+              >
                 {isSubmitting ? <LoadingSpinner /> : 'Upload New Vehicle'}
               </button>
             </div>
           </form>
         </div>
       </section>
-      <Footer></Footer>
+      <Footer />
     </main>
-  );
-};
-
-const FormInput = ({ label, name, type }) => {
-  return (
-    <div>
-      <label htmlFor={name} className="block text-sm font-medium mb-1">{label}</label>
-      <input type={type} id={name} name={name} className="w-full border-2 border-gray-300 rounded-md p-2 shadow-sm" required />
-    </div>
   );
 };
 

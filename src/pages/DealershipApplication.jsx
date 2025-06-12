@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Input from "../components/Input"; // Ensure correct path
-import FileUpload from "../components/FileUpload"; // Ensure correct path
+import Input from "../components/Input";
+import FileUpload from "../components/FileUpload";
+import VerificationPrompt from "../components/VerificationPrompt";
 
 const DealershipApplicationPage = () => {
+  const [isVerified, setIsVerified] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     summary: "",
@@ -63,7 +65,33 @@ const DealershipApplicationPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    const {
+      name,
+      summary,
+      cacCertificate,
+      dealershipLicence,
+      coverImage,
+      photos,
+    } = formData;
+
+    // Basic client-side validation
+    if (
+      !name ||
+      summary.length < 50 ||
+      !cacCertificate ||
+      !dealershipLicence ||
+      !coverImage ||
+      photos.length === 0
+    ) {
+      setAlert({
+        message:
+          "Please fill out all fields and ensure the summary is at least 50 characters.",
+        type: "error",
+      });
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) {
       setAlert({
@@ -72,7 +100,7 @@ const DealershipApplicationPage = () => {
       });
       return;
     }
-  
+
     setIsLoading(true);
     try {
       const form = new FormData();
@@ -85,7 +113,7 @@ const DealershipApplicationPage = () => {
           form.append(key, formData[key]);
         }
       }
-  
+
       const response = await axios.post(
         "https://auto-lease-backend.onrender.com/api/v1/dealerships/users/apply",
         form,
@@ -96,20 +124,26 @@ const DealershipApplicationPage = () => {
         }
       );
       console.log(response.data);
-  
+
       setAlert({
         message: "Application submitted successfully!",
         type: "success",
       });
-      
-      // Redirect to the dealership dashboard post page
+
       navigate("/dealership-dashboard/post");
     } catch (error) {
-      console.error("There was an error submitting the form!", error);
-      setAlert({
-        message: "There was an error submitting the form!",
-        type: "error",
-      });
+      if (
+        error.response?.status === 403 ||
+        error.response?.data?.message?.includes("verified")
+      ) {
+        setAlert({
+          message: error.response?.data?.message,
+          type: "error",
+        });
+      } else {
+        console.error("There was an error submitting the form!", error);
+        setAlert("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -119,8 +153,9 @@ const DealershipApplicationPage = () => {
     <div className=" flex items-center justify-center relative bg-gray-100 min-h-screen p-6 bg-autolease-pattern">
       {/* Overlay with dark blue tint */}
       <div className="absolute inset-0 bg-blue-900 bg-opacity-50"></div>
-      
+
       <div className="relative bg-white shadow-md rounded-lg overflow-hidden w-full max-w-md">
+        {!isVerified && <VerificationPrompt />}
         <div className="px-6 py-4">
           <h2 className="text-xl font-bold mb-4 text-center">
             Dealership Application
@@ -167,19 +202,39 @@ const DealershipApplicationPage = () => {
               label="Dealership Name"
               type="text"
               name="name"
+              placeholder="Enter your dealership name"
               value={formData.name}
               onChange={handleChange}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
-            <Input
-              label="Summary"
-              type="text"
-              name="summary"
-              value={formData.summary}
-              onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-
+            <div>
+              <label
+                htmlFor="summary"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Summary
+              </label>
+              <textarea
+                id="summary"
+                name="summary"
+                value={formData.summary}
+                onChange={handleChange}
+                rows={5}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md resize-none"
+                placeholder="Give us your slogan or a description of your dealership"
+                minLength={50}
+                required
+              />
+              <p
+                className={`text-sm mt-1 ${
+                  formData.summary.length < 50
+                    ? "text-red-500"
+                    : "text-green-600"
+                }`}
+              >
+                {formData.summary.length} / 50 characters
+              </p>
+            </div>
             <FileUpload
               label="Upload Your CAC"
               name="cacCertificate"
@@ -187,7 +242,7 @@ const DealershipApplicationPage = () => {
               className="block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
             {fileStatus.cacCertificate && (
-              <p className="text-green-500 text-sm">
+              <p className="text-indigo-500 text-sm">
                 CAC Certificate uploaded.
               </p>
             )}
@@ -198,18 +253,18 @@ const DealershipApplicationPage = () => {
               className="block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
             {fileStatus.dealershipLicence && (
-              <p className="text-green-500 text-sm">
+              <p className="text-indigo-500 text-sm">
                 Dealership Licence uploaded.
               </p>
             )}
             <FileUpload
-              label="Cover Image"
+              label="Dealership Logo"
               name="coverImage"
               onChange={handleChange}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
             {fileStatus.coverImage && (
-              <p className="text-green-500 text-sm">Cover Image uploaded.</p>
+              <p className="text-indigo-500 text-sm">Cover Image uploaded.</p>
             )}
             <FileUpload
               label="Photos"
@@ -219,10 +274,13 @@ const DealershipApplicationPage = () => {
               className="block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
             {fileStatus.photos && (
-              <p className="text-green-500 text-sm">
+              <p className="text-indigo-500 text-sm">
                 {formData.photos.length} photos uploaded.
               </p>
             )}
+            <div className="text-xs text-gray-500 text-center">
+              Your images will be verified for authenticity
+            </div>
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -267,8 +325,11 @@ const DealershipApplicationPage = () => {
           )}
           <p className="mt-4 text-center text-sm text-gray-600">
             Already a dealer?{" "}
-            <a href="/" className="text-indigo-600 underline">
-              Home
+            <a
+              href="/dealership-dashboard/post"
+              className="text-indigo-600 underline"
+            >
+              Dealership Dashboard
             </a>
           </p>
         </div>
