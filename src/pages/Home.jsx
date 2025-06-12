@@ -149,6 +149,9 @@ function Home() {
               <h3 className="text-2xl font-bold text-center text-gray-600">
                 {car.name}
               </h3>
+              <h6 className="font-semibold text-center text-gray-500 text-sm">
+                {car.model}
+              </h6>
               <img
                 src={car.coverImage.url}
                 alt={car.name}

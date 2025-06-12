@@ -181,7 +181,7 @@ const CarRentalForm = () => {
             <div className="max-w-sm mx-auto bg-white rounded-lg overflow-hidden md:max-w-md mt-8">
               <div className="p-4 flex items-center justify-between">
                 <h2 className="text-2xl font-semibold text-gray-800">
-                  {car.name}
+                  {car.name}&nbsp;<span className="text-xl font-medium text-gray-500">{car.model}</span>
                 </h2>
                 <span className="text-base text-gray-500 border p-1 rounded-lg">
                   {car.category}
@@ -205,6 +205,7 @@ const CarRentalForm = () => {
                 <p className="text-gray-700 mt-4 text-center pt-2">
                   <strong>Dealership:</strong> {car.dealership}
                 </p>
+                <br />
                 <p className="text-gray-700 text-center"><span className="font-semibold">{car.name}&nbsp;</span>{car.model}</p>
                 <p className="text-gray-700 mb-4 text-center text-sm">{car.summary}</p>
                 <div className="space-y-4">
